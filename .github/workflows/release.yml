@@ -1,0 +1,35 @@
+name: Release project
+on:
+  workflow_dispatch:
+    inputs:
+      releaseVersion:
+        description: "Version to release"
+        required: true
+        default: "X.Y.Z"
+
+# Releases need permissions to read and write the repository contents.
+# GitHub considers creating releases and uploading assets as writing contents.
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'microsoft'
+          cache: maven
+          server-id: github
+      - name: Configure Git User
+        run: |
+          git config user.email "actions@github.com"
+          git config user.name "GitHub Actions"
+      - name: Publish JAR
+        run: ./mvnw -B release:prepare release:perform -DreleaseVersion=${{ github.event.inputs.releaseVersion }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
