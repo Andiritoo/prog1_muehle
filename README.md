@@ -2,4 +2,4 @@
 
 This repo contains an implementation of "Mühli", a classical board game.
 
-The code was created as part of the prog1 module @ FHWN.
+The code was created as part of the prog1 module @ FHNW.
