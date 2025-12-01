@@ -14,7 +14,7 @@ public class GameState {
         initBoard();
     }
 
-    public void moveIsValid(/*TODO: SomeMove*/) {
+    public void moveIsValid(Move move) {
         // Validate Move
 
         // Send to GUI --> Either the updatedBoard or "Invalidmove"
