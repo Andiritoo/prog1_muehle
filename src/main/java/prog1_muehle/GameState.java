@@ -1,4 +1,4 @@
-package org.example;
+package prog1_muehle;
 
 public class GameState {
 
@@ -52,5 +52,45 @@ public class GameState {
         board[21] = new GameNode(3, 6, NodeValue.EMPTY);
         board[22] = new GameNode(3, 7, NodeValue.EMPTY);
         board[23] = new GameNode(3, 8, NodeValue.EMPTY);
+    }
+
+    public Boolean getGameInProgress() {
+        return gameInProgress;
+    }
+
+    public void setGameInProgress(Boolean gameInProgress) {
+        this.gameInProgress = gameInProgress;
+    }
+
+    public GameNode[] getBoard() {
+        return board;
+    }
+
+    public void setBoard(GameNode[] board) {
+        this.board = board;
+    }
+
+    public Player getWhite() {
+        return white;
+    }
+
+    public void setWhite(Player white) {
+        this.white = white;
+    }
+
+    public Player getBlack() {
+        return black;
+    }
+
+    public void setBlack(Player black) {
+        this.black = black;
+    }
+
+    public Boolean getWhiteToMove() {
+        return whiteToMove;
+    }
+
+    public void setWhiteToMove(Boolean whiteToMove) {
+        this.whiteToMove = whiteToMove;
     }
 }
