@@ -29,7 +29,7 @@ public class GameBoard implements Drawable {
         for(int i = 0; i<board.length; i++){
             double xCoord = border + (size * layerOffset);
             double yCoord = ((border/2)*3) + (size * layerOffset);
-            System.out.println("x: " + xCoord + " y: " + yCoord);
+            //System.out.println("x: " + xCoord + " y: " + yCoord); //for testing
             double sideLength = size-(xCoord*2);
             NodeValue[] layer = board[i];
 
