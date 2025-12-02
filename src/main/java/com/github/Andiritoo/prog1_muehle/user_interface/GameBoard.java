@@ -1,4 +1,4 @@
-package UserInterface;
+package com.github.Andiritoo.prog1_muehle.user_interface;
 import ch.trick17.gui.Gui;
 import ch.trick17.gui.component.Drawable;
 import com.github.Andiritoo.prog1_muehle.*;
@@ -29,7 +29,7 @@ public class GameBoard implements Drawable {
         for(int i = 0; i<board.length; i++){
             double xCoord = border + (size * layerOffset);
             double yCoord = ((border/2)*3) + (size * layerOffset);
-            System.out.println("x: " + xCoord + " y: " + yCoord);
+            //System.out.println("x: " + xCoord + " y: " + yCoord); //for testing
             double sideLength = size-(xCoord*2);
             NodeValue[] layer = board[i];
 
