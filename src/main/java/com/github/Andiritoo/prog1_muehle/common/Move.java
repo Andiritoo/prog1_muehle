@@ -1,4 +1,4 @@
-package com.github.Andiritoo.prog1_muehle;
+package com.github.Andiritoo.prog1_muehle.common;
 
 /**
  * SET: fromRow/fromCol = -1, toRow/toCol = Target

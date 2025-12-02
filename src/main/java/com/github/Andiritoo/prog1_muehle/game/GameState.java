@@ -1,7 +1,10 @@
-package com.github.Andiritoo.prog1_muehle;
+package com.github.Andiritoo.prog1_muehle.game;
 
 
-import static com.github.Andiritoo.prog1_muehle.NodeValue.*;
+import com.github.Andiritoo.prog1_muehle.common.NodeValue;
+import com.github.Andiritoo.prog1_muehle.player.Player;
+
+import static com.github.Andiritoo.prog1_muehle.common.NodeValue.*;
 
 public class GameState {
 
