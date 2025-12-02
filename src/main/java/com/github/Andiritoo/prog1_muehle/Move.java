@@ -1,26 +1,18 @@
 package com.github.Andiritoo.prog1_muehle;
 
+/**
+ * SET: fromRow/fromCol = -1, toRow/toCol = Target
+ * MOVE/JUMP: fromRow/fromCol -> toRow/toCol
+ * REMOVE: removeRow/removeCol != -1 (additional)
+ */
 public class Move {
 
-    // if from is NULL then Action is "Place"
-    // if to is NULL then the Action is "Remove"
-    // if both are set the Action is "Move"
-    private GameNode from;
-    private GameNode to;
+    public int fromRow = -1;
+    public int fromCol = -1;
 
-    public GameNode getFrom() {
-        return from;
-    }
+    public int toRow = -1;
+    public int toCol = -1;
 
-    public void setFrom(GameNode from) {
-        this.from = from;
-    }
-
-    public GameNode getTo() {
-        return to;
-    }
-
-    public void setTo(GameNode to) {
-        this.to = to;
-    }
+    public int removeRow = -1;
+    public int removeCol = -1;
 }

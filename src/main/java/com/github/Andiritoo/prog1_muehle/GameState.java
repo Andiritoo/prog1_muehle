@@ -1,31 +1,21 @@
 package com.github.Andiritoo.prog1_muehle;
 
-import java.lang.reflect.Array;
 
 import static com.github.Andiritoo.prog1_muehle.NodeValue.*;
 
 public class GameState {
 
     private Boolean gameInProgress;
-    private NodeValue[][] board = {{EMPTY, WHITE, EMPTY, EMPTY, BLACK, EMPTY, EMPTY, EMPTY}, {EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY}, {EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY}};
+    private NodeValue[][] board = {
+            {EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY},
+            {EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY},
+            {EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY}
+    };
     private Player white;
     private Player black;
+    private int stonesToPlaceWhite;
+    private int stonesToPlaceBlack;
     private Boolean whiteToMove;
-
-    public GameState() {
-
-        whiteToMove = true;
-
-
-    }
-
-    public void moveIsValid(Move move) {
-        // Validate Move
-
-        // Send to GUI --> Either the updatedBoard or "Invalidmove"
-
-        // Request next move from Player
-    }
 
     /**
      *
@@ -39,8 +29,9 @@ public class GameState {
     public Boolean getGameInProgress() {
         return gameInProgress;
     }
-    public void setGameInProgress() {
-        gameInProgress = true;
+
+    public void setGameInProgress(boolean gameInProgress) {
+        this.gameInProgress = gameInProgress;
     }
 
     public NodeValue[][] getBoard() {
@@ -73,5 +64,21 @@ public class GameState {
 
     public void setWhiteToMove(Boolean whiteToMove) {
         this.whiteToMove = whiteToMove;
+    }
+
+    public int getStonesToPlaceWhite() {
+        return stonesToPlaceWhite;
+    }
+
+    public void setStonesToPlaceWhite(int stonesToPlaceWhite) {
+        this.stonesToPlaceWhite = stonesToPlaceWhite;
+    }
+
+    public int getStonesToPlaceBlack() {
+        return stonesToPlaceBlack;
+    }
+
+    public void setStonesToPlaceBlack(int stonesToPlaceBlack) {
+        this.stonesToPlaceBlack = stonesToPlaceBlack;
     }
 }
