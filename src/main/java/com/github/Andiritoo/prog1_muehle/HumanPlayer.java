@@ -1,4 +1,4 @@
-package prog1_muehle;
+package com.github.Andiritoo.prog1_muehle;
 
 public class HumanPlayer {
     private int stontesToPlace;
