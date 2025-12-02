@@ -1,5 +1,10 @@
 package com.github.Andiritoo.prog1_muehle;
 
+//ToDo remove all dependencies
+
+/**
+ * GameNode is not to be used. Remove all dependencies and delete this Class.
+ */
 public class GameNode {
     private int layer;
     private int point;
