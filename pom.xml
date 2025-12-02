@@ -14,6 +14,21 @@
         <git.repository>Andiritoo/prog1_muehle</git.repository>
     </properties>
 
+    <dependencies>
+        <dependency>
+            <groupId>ch.trick17.gui</groupId>
+            <artifactId>gui</artifactId>
+            <version>2.5.0-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+
+    <repositories>
+        <repository>
+            <id>gitlab-gui</id>
+            <url>https://gitlab.fhnw.ch/api/v4/projects/17730/packages/maven</url>
+        </repository>
+    </repositories>
+
     <scm>
         <developerConnection>scm:git:https://github.com/${git.repository}.git</developerConnection>
         <tag>HEAD</tag>
