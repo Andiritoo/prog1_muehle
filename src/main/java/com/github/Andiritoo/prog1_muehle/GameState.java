@@ -1,17 +1,22 @@
 package com.github.Andiritoo.prog1_muehle;
 
+import java.lang.reflect.Array;
+
+import static com.github.Andiritoo.prog1_muehle.NodeValue.EMPTY;
+
 public class GameState {
 
     private Boolean gameInProgress;
-    private GameNode[] board;
+    private NodeValue[][] board = {{EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY}, {EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY}, {EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY}};
     private Player white;
     private Player black;
     private Boolean whiteToMove;
 
     public GameState() {
+
         whiteToMove = true;
 
-        initBoard();
+
     }
 
     public void moveIsValid(Move move) {
@@ -21,6 +26,16 @@ public class GameState {
 
         // Request next move from Player
     }
+
+    /**
+     *
+     * @return the original board, don't modify with this Methode directly. Use...?
+     */
+    public NodeValue[][] getGameBoard(){
+        return board;
+    }
+
+    /*
 
     public void initBoard() {
         board = new GameNode[24];
@@ -54,19 +69,20 @@ public class GameState {
         board[23] = new GameNode(3, 8, NodeValue.EMPTY);
     }
 
+     */
+
     public Boolean getGameInProgress() {
         return gameInProgress;
     }
-
-    public void setGameInProgress(Boolean gameInProgress) {
-        this.gameInProgress = gameInProgress;
+    public void toggleGameInProgress() {
+        gameInProgress = !gameInProgress;
     }
 
-    public GameNode[] getBoard() {
+    public NodeValue[][] getBoard() {
         return board;
     }
 
-    public void setBoard(GameNode[] board) {
+    public void setBoard(NodeValue[][] board) {
         this.board = board;
     }
 
