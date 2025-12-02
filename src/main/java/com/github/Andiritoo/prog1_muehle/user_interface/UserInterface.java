@@ -1,6 +1,7 @@
 package com.github.Andiritoo.prog1_muehle.user_interface;
 import ch.trick17.gui.Gui;
 import com.github.Andiritoo.prog1_muehle.*;
+import com.github.Andiritoo.prog1_muehle.game.GameState;
 
 
 public class UserInterface {

@@ -1,6 +1,10 @@
 package com.github.Andiritoo.prog1_muehle.llm;
 
 import com.github.Andiritoo.prog1_muehle.*;
+import com.github.Andiritoo.prog1_muehle.common.Move;
+import com.github.Andiritoo.prog1_muehle.common.NodeValue;
+import com.github.Andiritoo.prog1_muehle.game.GameState;
+import com.github.Andiritoo.prog1_muehle.player.Player;
 import dev.langchain4j.model.chat.ChatLanguageModel;
 import dev.langchain4j.model.ollama.OllamaChatModel;
 

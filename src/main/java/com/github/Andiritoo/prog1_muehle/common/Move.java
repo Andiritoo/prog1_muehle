@@ -7,12 +7,31 @@ package com.github.Andiritoo.prog1_muehle.common;
  */
 public class Move {
 
-    public int fromRow = -1;
-    public int fromCol = -1;
+    public int from = -1;
+    public int to = -1;
+    public int remove = -1;
 
-    public int toRow = -1;
-    public int toCol = -1;
+    public int getFrom() {
+        return from;
+    }
 
-    public int removeRow = -1;
-    public int removeCol = -1;
+    public void setFrom(int from) {
+        this.from = from;
+    }
+
+    public int getTo() {
+        return to;
+    }
+
+    public void setTo(int to) {
+        this.to = to;
+    }
+
+    public int getRemove() {
+        return remove;
+    }
+
+    public void setRemove(int remove) {
+        this.remove = remove;
+    }
 }

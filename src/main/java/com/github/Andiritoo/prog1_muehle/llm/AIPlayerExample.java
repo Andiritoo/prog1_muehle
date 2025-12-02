@@ -1,8 +1,8 @@
 package com.github.Andiritoo.prog1_muehle.llm;
 
-import com.github.Andiritoo.prog1_muehle.GameState;
-import com.github.Andiritoo.prog1_muehle.NodeValue;
-import com.github.Andiritoo.prog1_muehle.Player;
+import com.github.Andiritoo.prog1_muehle.common.NodeValue;
+import com.github.Andiritoo.prog1_muehle.game.GameState;
+import com.github.Andiritoo.prog1_muehle.player.Player;
 
 /**
  * SETUP:
