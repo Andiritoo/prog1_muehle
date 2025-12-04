@@ -8,14 +8,18 @@ import static com.github.Andiritoo.prog1_muehle.common.NodeValue.*;
 
 public class GameState {
 
-    private Boolean gameInProgress;
+    private boolean gameInProgress;
 
-    private NodeValue[][] board = {{EMPTY, WHITE, EMPTY, EMPTY, BLACK, EMPTY, EMPTY, EMPTY}, {EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY}, {EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY}};
+    private NodeValue[][] board = {
+            {EMPTY, WHITE, EMPTY, EMPTY, BLACK, EMPTY, EMPTY, EMPTY},
+            {EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY},
+            {EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY}
+    };
     private Player white;
     private Player black;
     private int stonesToPlaceWhite;
     private int stonesToPlaceBlack;
-    private Boolean whiteToMove;
+    private boolean whiteToMove;
 
     /**
      * @return Returns the Mill game board as a 3x8 two-dimensional array of nodes.
@@ -30,7 +34,7 @@ public class GameState {
     }
 
 
-    public Boolean getGameInProgress() {
+    public boolean isGameInProgress() {
         return gameInProgress;
     }
 
@@ -62,11 +66,11 @@ public class GameState {
         this.black = black;
     }
 
-    public Boolean getWhiteToMove() {
+    public boolean isWhiteToMove() {
         return whiteToMove;
     }
 
-    public void setWhiteToMove(Boolean whiteToMove) {
+    public void setWhiteToMove(boolean whiteToMove) {
         this.whiteToMove = whiteToMove;
     }
 

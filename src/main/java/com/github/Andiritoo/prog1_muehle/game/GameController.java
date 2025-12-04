@@ -10,6 +10,44 @@ public class GameController {
 
     public void startNewGame(Player white, Player black) {
         this.engine = new GameEngineImpl(white, black);
+        runGameLoop(white, black);
+    }
+
+    //TODO: polish, just example for demo
+    private void runGameLoop(Player white, Player black) {
+        GameState state = engine.getState();
+
+        while (!engine.isGameOver()) {
+            Player currentPlayer = state.isWhiteToMove() ? white : black;
+            System.out.println((state.isWhiteToMove() ? "White" : "Black") + " player's turn");
+
+            Move move = currentPlayer.move(state);
+
+            if (engine.isMoveValid(move)) {
+                engine.applyMove(move);
+                System.out.println("Move applied: from=" + move.getFrom() + " to=" + move.getTo());
+
+                if (engine.isAwaitingRemove()) {
+                    Move removeMove = currentPlayer.move(state);
+                    if (engine.isMoveValid(removeMove)) {
+                        engine.applyMove(removeMove);
+                        System.out.println("Piece removed at: " + removeMove.getRemove());
+                    }
+                }
+            } else {
+                System.out.println("Invalid move attempted!");
+            }
+
+            state = engine.getState();
+        }
+
+        System.out.println("Game Over!");
+        Player winner = engine.getWinner();
+        if (winner != null) {
+            System.out.println("Winner: " + (winner == white ? "White" : "Black"));
+        } else {
+            System.out.println("Game ended in a draw");
+        }
     }
 
     public void handleUserMove(Move move) {

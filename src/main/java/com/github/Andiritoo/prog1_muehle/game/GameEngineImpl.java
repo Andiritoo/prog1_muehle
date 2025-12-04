@@ -17,20 +17,21 @@ public class GameEngineImpl implements GameEngine {
         state.setGameInProgress(true);
     }
 
-
+    // TODO: Return defensive copy
     @Override
     public GameState getState() {
-        return null;
+        return state;
     }
 
     @Override
     public boolean isMoveValid(Move move) {
-        return false;
+        return true;
     }
 
     @Override
     public GameState applyMove(Move move) {
-        return null;
+        state.setWhiteToMove(!state.isWhiteToMove());
+        return state;
     }
 
     @Override
