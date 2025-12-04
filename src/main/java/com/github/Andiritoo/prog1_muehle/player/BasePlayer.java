@@ -4,11 +4,6 @@ public abstract class BasePlayer {
     private String playerName;
     private int gamesWon;
 
-    public BasePlayer(String playerName, int gamesWon) {
-        this.playerName = playerName;
-        this.gamesWon = gamesWon;
-    }
-
     public String getPlayerName() {
         return playerName;
     }
@@ -23,5 +18,9 @@ public abstract class BasePlayer {
 
     public void setGamesWon(int gamesWon) {
         this.gamesWon = gamesWon;
+    }
+
+    public void incrementGameWon() {
+        this.gamesWon++;
     }
 }
