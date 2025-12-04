@@ -1,4 +1,4 @@
-package com.github.Andiritoo.prog1_muehle.llm;
+package com.github.Andiritoo.prog1_muehle.llmPlayer;
 
 import com.github.Andiritoo.prog1_muehle.common.Move;
 import com.github.Andiritoo.prog1_muehle.common.NodeValue;
@@ -23,12 +23,8 @@ public class AIPlayer implements Player {
      */
     public AIPlayer(NodeValue playerColor) {
         this.playerColor = playerColor;
-        this.model = OllamaChatModel.builder()
-                .baseUrl(LLM_URL)
-                .modelName(LLM_MODEL)
-                .temperature(0.7)
-                .timeout(Duration.ofMinutes(2))
-                .build();
+        this.model = OllamaChatModel.builder().baseUrl(LLM_URL).modelName(LLM_MODEL)
+                .temperature(0.7).timeout(Duration.ofMinutes(2)).build();
     }
 
     @Override
@@ -81,7 +77,8 @@ public class AIPlayer implements Player {
             prompt.append("- ").append(move).append("\n");
         }
 
-        prompt.append("\nRespond with ONLY the move in format: 'PLACE layer point' or 'MOVE from_layer from_point to_layer to_point' or 'REMOVE layer point'\n");
+        prompt.append(
+                "\nRespond with ONLY the move in format: 'PLACE layer point' or 'MOVE from_layer from_point to_layer to_point' or 'REMOVE layer point'\n");
         prompt.append("Example: 'PLACE 1 3' or 'MOVE 1 2 2 2' or 'REMOVE 2 5'\n");
 
         return prompt.toString();
@@ -117,8 +114,8 @@ public class AIPlayer implements Player {
                     if (board[layer][position] == playerColor) {
                         List<int[]> adjacentEmpty = getAdjacentEmpty(board, layer, position);
                         for (int[] target : adjacentEmpty) {
-                            moves.add("MOVE " + (layer + 1) + " " + (position + 1) +
-                                    " " + (target[0] + 1) + " " + (target[1] + 1));
+                            moves.add("MOVE " + (layer + 1) + " " + (position + 1) + " "
+                                    + (target[0] + 1) + " " + (target[1] + 1));
                         }
                     }
                 }
@@ -136,19 +133,20 @@ public class AIPlayer implements Player {
         int nextPosition = position == 7 ? 0 : position + 1;
 
         if (board[layer][prevPosition] == NodeValue.EMPTY) {
-            adjacent.add(new int[]{layer, prevPosition});
+            adjacent.add(new int[] {layer, prevPosition});
         }
         if (board[layer][nextPosition] == NodeValue.EMPTY) {
-            adjacent.add(new int[]{layer, nextPosition});
+            adjacent.add(new int[] {layer, nextPosition});
         }
 
-        // Check connections to other layers (at even positions: 1, 3, 5, 7 in 1-based, which are 0, 2, 4, 6 in 0-based)
+        // Check connections to other layers (at even positions: 1, 3, 5, 7 in 1-based, which are 0,
+        // 2, 4, 6 in 0-based)
         // According to GameState comment: even positions (2,4,6,8 in 1-based) allow layer changes
         // In 0-based indexing, that's positions 1, 3, 5, 7
         if (position % 2 == 1) {
             for (int otherLayer = 0; otherLayer < 3; otherLayer++) {
                 if (otherLayer != layer && board[otherLayer][position] == NodeValue.EMPTY) {
-                    adjacent.add(new int[]{otherLayer, position});
+                    adjacent.add(new int[] {otherLayer, position});
                 }
             }
         }
@@ -162,18 +160,18 @@ public class AIPlayer implements Player {
         try {
             if (cleanResponse.startsWith("PLACE")) {
                 String[] parts = cleanResponse.split("\\s+");
-                int layer = Integer.parseInt(parts[1]) - 1;  // Convert to 0-based
-                int position = Integer.parseInt(parts[2]) - 1;  // Convert to 0-based
+                int layer = Integer.parseInt(parts[1]) - 1; // Convert to 0-based
+                int position = Integer.parseInt(parts[2]) - 1; // Convert to 0-based
 
                 int targetIndex = boardIndex(layer, position);
                 return new Move(-1, targetIndex);
 
             } else if (cleanResponse.startsWith("MOVE")) {
                 String[] parts = cleanResponse.split("\\s+");
-                int fromLayer = Integer.parseInt(parts[1]) - 1;  // Convert to 0-based
-                int fromPosition = Integer.parseInt(parts[2]) - 1;  // Convert to 0-based
-                int toLayer = Integer.parseInt(parts[3]) - 1;  // Convert to 0-based
-                int toPosition = Integer.parseInt(parts[4]) - 1;  // Convert to 0-based
+                int fromLayer = Integer.parseInt(parts[1]) - 1; // Convert to 0-based
+                int fromPosition = Integer.parseInt(parts[2]) - 1; // Convert to 0-based
+                int toLayer = Integer.parseInt(parts[3]) - 1; // Convert to 0-based
+                int toPosition = Integer.parseInt(parts[4]) - 1; // Convert to 0-based
 
                 int fromIndex = boardIndex(fromLayer, fromPosition);
                 int toIndex = boardIndex(toLayer, toPosition);
@@ -181,8 +179,8 @@ public class AIPlayer implements Player {
 
             } else if (cleanResponse.startsWith("REMOVE")) {
                 String[] parts = cleanResponse.split("\\s+");
-                int layer = Integer.parseInt(parts[1]) - 1;  // Convert to 0-based
-                int position = Integer.parseInt(parts[2]) - 1;  // Convert to 0-based
+                int layer = Integer.parseInt(parts[1]) - 1; // Convert to 0-based
+                int position = Integer.parseInt(parts[2]) - 1; // Convert to 0-based
 
                 int targetIndex = boardIndex(layer, position);
                 Move move = new Move(-1, -1);
@@ -215,8 +213,7 @@ public class AIPlayer implements Player {
     }
 
     /**
-     * Converts layer and position to a single board index.
-     * Board index = layer * 8 + position
+     * Converts layer and position to a single board index. Board index = layer * 8 + position
      */
     private int boardIndex(int layer, int position) {
         return layer * 8 + position;

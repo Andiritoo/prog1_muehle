@@ -1,10 +1,11 @@
 package com.github.Andiritoo.prog1_muehle.user_interface;
 
 import ch.trick17.gui.Gui;
+import com.github.Andiritoo.prog1_muehle.botPlayer.BotPlayer;
 import com.github.Andiritoo.prog1_muehle.common.NodeValue;
 import com.github.Andiritoo.prog1_muehle.game.GameController;
-import com.github.Andiritoo.prog1_muehle.llm.AIPlayer;
-import com.github.Andiritoo.prog1_muehle.player.HumanPlayer;
+import com.github.Andiritoo.prog1_muehle.humanPlayer.HumanPlayer;
+import com.github.Andiritoo.prog1_muehle.llmPlayer.AIPlayer;
 import com.github.Andiritoo.prog1_muehle.player.Player;
 
 public class UserInterface {
@@ -15,7 +16,8 @@ public class UserInterface {
         GameController controller = new GameController();
 
         Player whitePlayer = new HumanPlayer();
-        Player blackPlayer = new AIPlayer(NodeValue.BLACK);
+        Player blackPlayer = new BotPlayer();
+        // Player blackPlayer = new AIPlayer(NodeValue.BLACK);
 
         controller.startNewGame(whitePlayer, blackPlayer);
 
