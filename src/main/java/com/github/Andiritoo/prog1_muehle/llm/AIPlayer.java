@@ -1,6 +1,9 @@
 package com.github.Andiritoo.prog1_muehle.llm;
 
-import com.github.Andiritoo.prog1_muehle.*;
+import com.github.Andiritoo.prog1_muehle.common.Move;
+import com.github.Andiritoo.prog1_muehle.common.NodeValue;
+import com.github.Andiritoo.prog1_muehle.game.GameState;
+import com.github.Andiritoo.prog1_muehle.player.Player;
 import dev.langchain4j.model.chat.ChatLanguageModel;
 import dev.langchain4j.model.ollama.OllamaChatModel;
 
@@ -154,7 +157,6 @@ public class AIPlayer implements Player {
     }
 
     private Move parseMove(String response, GameState gameState) {
-        Move move = new Move();
         String cleanResponse = response.trim().toUpperCase();
 
         try {
@@ -163,8 +165,8 @@ public class AIPlayer implements Player {
                 int layer = Integer.parseInt(parts[1]) - 1;  // Convert to 0-based
                 int position = Integer.parseInt(parts[2]) - 1;  // Convert to 0-based
 
-                GameNode target = createGameNode(gameState.getBoard(), layer, position);
-                move.setTo(target);
+                int targetIndex = boardIndex(layer, position);
+                return new Move(-1, targetIndex);
 
             } else if (cleanResponse.startsWith("MOVE")) {
                 String[] parts = cleanResponse.split("\\s+");
@@ -173,52 +175,50 @@ public class AIPlayer implements Player {
                 int toLayer = Integer.parseInt(parts[3]) - 1;  // Convert to 0-based
                 int toPosition = Integer.parseInt(parts[4]) - 1;  // Convert to 0-based
 
-                GameNode from = createGameNode(gameState.getBoard(), fromLayer, fromPosition);
-                GameNode to = createGameNode(gameState.getBoard(), toLayer, toPosition);
-
-                move.setFrom(from);
-                move.setTo(to);
+                int fromIndex = boardIndex(fromLayer, fromPosition);
+                int toIndex = boardIndex(toLayer, toPosition);
+                return new Move(fromIndex, toIndex);
 
             } else if (cleanResponse.startsWith("REMOVE")) {
                 String[] parts = cleanResponse.split("\\s+");
                 int layer = Integer.parseInt(parts[1]) - 1;  // Convert to 0-based
                 int position = Integer.parseInt(parts[2]) - 1;  // Convert to 0-based
 
-                GameNode target = createGameNode(gameState.getBoard(), layer, position);
-                move.setFrom(target);  // For REMOVE, set 'from' (to=null indicates remove action)
+                int targetIndex = boardIndex(layer, position);
+                Move move = new Move(-1, -1);
+                move.setRemove(targetIndex);
+                return move;
             }
         } catch (Exception e) {
             System.err.println("Failed to parse move: " + response);
             // Fallback: return first available move
-            move = getFirstAvailableMove(gameState);
+            return getFirstAvailableMove(gameState);
         }
 
-        return move;
+        return getFirstAvailableMove(gameState);
     }
 
     private Move getFirstAvailableMove(GameState gameState) {
-        Move move = new Move();
         NodeValue[][] board = gameState.getBoard();
 
         // Just find first empty spot for placement
         for (int layer = 0; layer < 3; layer++) {
             for (int position = 0; position < 8; position++) {
                 if (board[layer][position] == NodeValue.EMPTY) {
-                    move.setTo(createGameNode(board, layer, position));
-                    return move;
+                    int targetIndex = boardIndex(layer, position);
+                    return new Move(-1, targetIndex);
                 }
             }
         }
 
-        return move;
+        return new Move(-1, -1);
     }
 
     /**
-     * Creates a GameNode object from the 2D board array.
-     * This is needed because Move still uses GameNode references.
-     * Note: GameNode indices are 1-based in the constructor.
+     * Converts layer and position to a single board index.
+     * Board index = layer * 8 + position
      */
-    private GameNode createGameNode(NodeValue[][] board, int layer, int position) {
-        return new GameNode(layer + 1, position + 1, board[layer][position]);
+    private int boardIndex(int layer, int position) {
+        return layer * 8 + position;
     }
 }

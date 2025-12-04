@@ -1,8 +1,8 @@
 package com.github.Andiritoo.prog1_muehle.llm;
 
-import com.github.Andiritoo.prog1_muehle.GameState;
-import com.github.Andiritoo.prog1_muehle.NodeValue;
-import com.github.Andiritoo.prog1_muehle.Player;
+import com.github.Andiritoo.prog1_muehle.common.NodeValue;
+import com.github.Andiritoo.prog1_muehle.game.GameState;
+import com.github.Andiritoo.prog1_muehle.player.Player;
 
 /**
  * SETUP:
@@ -25,17 +25,25 @@ public class AIPlayerExample {
         var move = whitePlayer.move(gameState);
 
         System.out.println("\nAI suggests move:");
-        if (move.getFrom() == null && move.getTo() != null) {
-            System.out.println("PLACE at layer " + move.getTo().getLayer() +
-                             " point " + move.getTo().getPoint());
-        } else if (move.getFrom() != null && move.getTo() != null) {
-            System.out.println("MOVE from layer " + move.getFrom().getLayer() +
-                             " point " + move.getFrom().getPoint() +
-                             " to layer " + move.getTo().getLayer() +
-                             " point " + move.getTo().getPoint());
-        } else if (move.getFrom() != null && move.getTo() == null) {
-            System.out.println("REMOVE at layer " + move.getFrom().getLayer() +
-                             " point " + move.getFrom().getPoint());
+        if (move.getFrom() == -1 && move.getTo() != -1) {
+            int layer = move.getTo() / 8;
+            int position = move.getTo() % 8;
+            System.out.println("PLACE at layer " + (layer + 1) +
+                             " position " + (position + 1));
+        } else if (move.getFrom() != -1 && move.getTo() != -1) {
+            int fromLayer = move.getFrom() / 8;
+            int fromPosition = move.getFrom() % 8;
+            int toLayer = move.getTo() / 8;
+            int toPosition = move.getTo() % 8;
+            System.out.println("MOVE from layer " + (fromLayer + 1) +
+                             " position " + (fromPosition + 1) +
+                             " to layer " + (toLayer + 1) +
+                             " position " + (toPosition + 1));
+        } else if (move.getRemove() != -1) {
+            int layer = move.getRemove() / 8;
+            int position = move.getRemove() % 8;
+            System.out.println("REMOVE at layer " + (layer + 1) +
+                             " position " + (position + 1));
         }
     }
 }

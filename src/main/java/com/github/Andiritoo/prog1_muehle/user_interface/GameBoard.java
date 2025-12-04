@@ -2,8 +2,10 @@ package com.github.Andiritoo.prog1_muehle.user_interface;
 import ch.trick17.gui.Gui;
 import ch.trick17.gui.component.Drawable;
 import com.github.Andiritoo.prog1_muehle.*;
+import com.github.Andiritoo.prog1_muehle.common.NodeValue;
 
-import static com.github.Andiritoo.prog1_muehle.NodeValue.*;
+import static com.github.Andiritoo.prog1_muehle.common.NodeValue.BLACK;
+import static com.github.Andiritoo.prog1_muehle.common.NodeValue.WHITE;
 
 
 public class GameBoard implements Drawable {
