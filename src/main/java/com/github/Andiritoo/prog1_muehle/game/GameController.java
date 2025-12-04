@@ -65,6 +65,10 @@ public class GameController {
         return engine != null ? engine.getGamePhase() : null;
     }
 
+    public boolean isAwaitingMove() {
+        return engine != null && engine.isAwaitingMove();
+    }
+
     public boolean isAwaitingRemove() {
         return engine != null && engine.isAwaitingRemove();
     }

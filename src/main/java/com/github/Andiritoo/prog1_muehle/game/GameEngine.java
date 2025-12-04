@@ -17,4 +17,6 @@ public interface GameEngine {
     GamePhase getGamePhase();
 
     boolean isAwaitingRemove();
+
+    boolean isAwaitingMove();
 }

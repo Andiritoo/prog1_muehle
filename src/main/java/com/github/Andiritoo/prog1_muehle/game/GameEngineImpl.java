@@ -53,4 +53,9 @@ public class GameEngineImpl implements GameEngine {
     public boolean isAwaitingRemove() {
         return false;
     }
+
+    @Override
+    public boolean isAwaitingMove() {
+        return false;
+    }
 }
