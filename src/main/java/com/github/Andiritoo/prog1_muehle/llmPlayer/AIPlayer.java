@@ -3,6 +3,7 @@ package com.github.Andiritoo.prog1_muehle.llmPlayer;
 import com.github.Andiritoo.prog1_muehle.common.Move;
 import com.github.Andiritoo.prog1_muehle.common.NodeValue;
 import com.github.Andiritoo.prog1_muehle.game.GameState;
+import com.github.Andiritoo.prog1_muehle.player.BasePlayer;
 import com.github.Andiritoo.prog1_muehle.player.Player;
 import dev.langchain4j.model.chat.ChatLanguageModel;
 import dev.langchain4j.model.ollama.OllamaChatModel;
@@ -11,7 +12,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AIPlayer implements Player {
+public class AIPlayer extends BasePlayer implements Player {
     private static final String LLM_URL = "http://localhost:11434";
     private static final String LLM_MODEL = "llama3.2";
 
