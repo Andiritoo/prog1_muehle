@@ -184,7 +184,8 @@ public class AIPlayer implements Player {
 
                 int targetIndex = boardIndex(layer, position);
                 Move move = new Move(-1, -1);
-                move.setRemove(targetIndex);
+                move.setFrom(targetIndex);
+                move.setTo(-1);
                 return move;
             }
         } catch (Exception e) {

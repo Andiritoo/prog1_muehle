@@ -35,9 +35,9 @@ public class AIPlayerExample {
             System.out.println(
                     "MOVE from layer " + (fromLayer + 1) + " position " + (fromPosition + 1)
                             + " to layer " + (toLayer + 1) + " position " + (toPosition + 1));
-        } else if (move.getRemove() != -1) {
-            int layer = move.getRemove() / 8;
-            int position = move.getRemove() % 8;
+        } else if (move.getFrom() != -1 && move.getTo() == -1) {
+            int layer = move.getFrom() / 8;
+            int position = move.getFrom() % 8;
             System.out.println("REMOVE at layer " + (layer + 1) + " position " + (position + 1));
         }
     }

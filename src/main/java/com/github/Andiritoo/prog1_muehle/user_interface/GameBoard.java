@@ -1,75 +1,159 @@
 package com.github.Andiritoo.prog1_muehle.user_interface;
+
 import ch.trick17.gui.Gui;
+import ch.trick17.gui.component.Clickable;
 import ch.trick17.gui.component.Drawable;
-import com.github.Andiritoo.prog1_muehle.*;
+import ch.trick17.gui.component.Rectangle;
+import ch.trick17.gui.component.Shape;
+import com.github.Andiritoo.prog1_muehle.common.Move;
 import com.github.Andiritoo.prog1_muehle.common.NodeValue;
+import com.github.Andiritoo.prog1_muehle.game.GameController;
+import com.github.Andiritoo.prog1_muehle.game.GamePhase;
 
 import static com.github.Andiritoo.prog1_muehle.common.NodeValue.BLACK;
 import static com.github.Andiritoo.prog1_muehle.common.NodeValue.WHITE;
 
+public class GameBoard implements Drawable, Clickable {
 
-public class GameBoard implements Drawable {
+    private final GameController controller;
+    private final Gui gui;   // <<< GUI-Referenz speichern
 
-    private NodeValue[][] board;
-    private double size;
+    private Integer selected = null;
 
-    public GameBoard(NodeValue[][] board, double size){
-        this.board = board;
-        this.size = size;
+    private static final double[] X = {0, 0.5, 1, 1, 1, 0.5, 0, 0};
+    private static final double[] Y = {0, 0, 0, 0.5, 1, 1, 1, 0.5};
+
+    public GameBoard(GameController controller, Gui gui) {
+        this.controller = controller;
+        this.gui = gui;  // <<< merken für refresh()
     }
 
     @Override
     public void draw(Gui gui) {
-        double nodeSize = size * 0.01;
-        double piceSize = size * 0.02;
-        double[] xCoordinates = {0,0.5,1,1,1,0.5,0,0};
-        double[] yCoordinates = {0,0,0,0.5,1,1,1,0.5};
-        double layerOffset = 0.0;
-        double offset = (0.8/6);
+
+        double size = Math.min(gui.getWidth(), gui.getHeight());
         double border = size * 0.1;
 
-        for(int i = 0; i<board.length; i++){
-            double xCoord = border + (size * layerOffset);
-            double yCoord = ((border/2)*3) + (size * layerOffset);
-            //System.out.println("x: " + xCoord + " y: " + yCoord); //for testing
-            double sideLength = size-(xCoord*2);
-            NodeValue[] layer = board[i];
+        double usable = size - 2 * border;
 
-            gui.setStrokeWidth(size*0.0033333333);
-            gui.drawRect(xCoord, yCoord, sideLength, sideLength);
-            gui.drawLine(xCoord + (sideLength * 0.5), yCoord, xCoord + (sideLength * 0.5), yCoord + (size*offset));
-            gui.drawLine(xCoord + sideLength, yCoord + (sideLength * 0.5), xCoord + sideLength - (size*offset), yCoord + (sideLength * 0.5));
-            gui.drawLine(xCoord + (sideLength * 0.5), yCoord + sideLength, xCoord + (sideLength * 0.5), yCoord + sideLength-(size*offset));
-            gui.drawLine(xCoord, yCoord + (sideLength * 0.5), xCoord + (size*offset), yCoord + (sideLength * 0.5));
+        double nodeSize = usable * 0.02;
+        double pieceSize = usable * 0.04;
 
-            for (int j = 0; j < layer.length; j++){
-                double centerX = xCoord + (sideLength * xCoordinates[j]);
-                double centerY = yCoord + (sideLength * yCoordinates[j]);
+        for (int layer = 0; layer < 3; layer++) {
 
-                if (layer[j] == WHITE) {
-                    gui.setColor(255,255,255);
-                    gui.fillCircle(centerX,centerY,piceSize);
-                    gui.setColor(0,0,0);
-                    gui.drawCircle(centerX,centerY,piceSize);
-                    gui.drawCircle(centerX,centerY,piceSize*0.6);
+            double layerFraction = (2 - layer) / 2.0;
+            double side = usable * (0.5 + layerFraction * 0.5);
 
-                } else if (layer[j] == BLACK){
-                    gui.setColor(0,0,0);
-                    gui.fillCircle(centerX,centerY,piceSize);
-                    gui.setColor(255,255,255);
-                    gui.drawCircle(centerX,centerY,piceSize*0.6);
+            double x0 = border + (usable - side) / 2;
+            double y0 = border + (usable - side) / 2;
+
+            gui.setStrokeWidth(size * 0.003);
+            gui.drawRect(x0, y0, side, side);
+
+            gui.drawLine(x0 + side * 0.5, y0, x0 + side * 0.5, y0 + side * 0.25);
+            gui.drawLine(x0 + side, y0 + side * 0.5, x0 + side * 0.75, y0 + side * 0.5);
+            gui.drawLine(x0 + side * 0.5, y0 + side, x0 + side * 0.5, y0 + side * 0.75);
+            gui.drawLine(x0, y0 + side * 0.5, x0 + side * 0.25, y0 + side * 0.5);
+
+            for (int j = 0; j < 8; j++) {
+                double cx = x0 + side * X[j];
+                double cy = y0 + side * Y[j];
+
+                NodeValue value = controller.getState().getBoard()[layer][j];
+
+                if (value == WHITE) {
+                    gui.setColor(255, 255, 255);
+                    gui.fillCircle(cx, cy, pieceSize);
+                    gui.setColor(0, 0, 0);
+                    gui.drawCircle(cx, cy, pieceSize);
+
+                } else if (value == BLACK) {
+                    gui.setColor(0, 0, 0);
+                    gui.fillCircle(cx, cy, pieceSize);
+                    gui.setColor(255, 255, 255);
+                    gui.drawCircle(cx, cy, pieceSize * 0.6);
+
                 } else {
-                    gui.setColor(0,0,0);
-                    gui.fillCircle(centerX,centerY,nodeSize);
+                    gui.setColor(0, 0, 0);
+                    gui.fillCircle(cx, cy, nodeSize);
                 }
-
             }
+        }
+    }
 
-            layerOffset += offset;
+    @Override
+    public Shape getInteractiveArea(Gui gui) {
+        return new Rectangle(0, 0, gui.getWidth(), gui.getHeight());
+    }
+
+    @Override
+    public void onLeftClick(double x, double y) {
+        int pos = positionFromCoordinates(x, y);
+        System.out.println("CLICK at " + x + ", " + y + " → pos: " + pos);
+
+        if (pos == -1) return;
+
+        if (controller.isAwaitingRemove()) {
+            System.out.println(">>> REMOVE-PHASE: remove stone at " + pos);
+            controller.handleUserMove(new Move(pos, -1));
+            gui.refresh();
+            return;
         }
 
+        if (controller.getGamePhase() == GamePhase.PLACE) {
+            System.out.println(">>> PLACE-PHASE: set stone at " + pos);
+            controller.handleUserMove(new Move(-1, pos));
+            gui.refresh();
+            return;
+        }
+
+        if (selected == null) {
+            System.out.println(">>> SELECT: " + pos);
+            selected = pos;
+        } else {
+            System.out.println(">>> MOVE: " + selected + " → " + pos);
+            controller.handleUserMove(new Move(selected, pos));
+            selected = null;
+        }
+
+        gui.refresh();
+    }
 
 
 
+    @Override
+    public void onRightClick(double x, double y) {
+    }
+
+    private int positionFromCoordinates(double x, double y) {
+
+        double size = Math.min(gui.getWidth(), gui.getHeight());
+        double usable = size - 2 * (size * 0.1);
+
+        for (int layer = 0; layer < 3; layer++) {
+
+            double layerFraction = (2 - layer) / 2.0;
+            double side = usable * (0.5 + layerFraction * 0.5);
+            double border = size * 0.1;
+
+            double x0 = border + (usable - side) / 2;
+            double y0 = border + (usable - side) / 2;
+
+            double radius = usable * 0.04;
+
+            for (int j = 0; j < 8; j++) {
+                double cx = x0 + side * X[j];
+                double cy = y0 + side * Y[j];
+
+                double dx = x - cx;
+                double dy = y - cy;
+
+                if (dx * dx + dy * dy <= radius * radius) {
+                    return layer * 8 + j;
+                }
+            }
+        }
+
+        return -1;
     }
 }

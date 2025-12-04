@@ -14,7 +14,7 @@ public interface GameEngine {
 
     Player getWinner();
 
-    GamePhase getGamePhase();
+    GamePhase getGamePhaseForCurrentPlayer();
 
     boolean isAwaitingRemove();
 
