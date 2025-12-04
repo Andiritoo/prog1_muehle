@@ -20,14 +20,10 @@ public class UserInterface {
 
         gui = Gui.create("Mühli", width, height);
 
-        Player whitePlayer = new HumanPlayer();
-        Player blackPlayer = new BotPlayer();
 
         // Leaderboard
         openLeaderboard(null);
-        startGame(whitePlayer, blackPlayer);
 
-        gui.setResizable(true);
         gui.open();
         gui.runUntilClosed();
     }

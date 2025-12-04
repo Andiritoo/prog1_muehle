@@ -30,6 +30,7 @@ public class GameBoard implements Drawable, Clickable {
 
     @Override
     public void draw(Gui gui) {
+        //TODO: reopen Leaderboard and increment gamesWon for Winner --> pass back to leaderboard
 
         double size = Math.min(gui.getWidth(), gui.getHeight());
         double border = size * 0.1;

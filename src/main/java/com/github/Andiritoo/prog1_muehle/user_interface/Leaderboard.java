@@ -219,21 +219,21 @@ public class Leaderboard implements Drawable {
             System.out.println("Start game (human vs human) for: " + playerName);
             var black = new HumanPlayer();
             black.setPlayerName("Player 2");
-
+            gui.removeComponent(this);
             UserInterface.startGame(white, black);
         }
         else if (btnBot.contains(mx, my)) {
             System.out.println("Start game (human vs bot) for: " + playerName);
             var black = new BotPlayer();
             black.setPlayerName("Bot");
-
+            gui.removeComponent(this);
             UserInterface.startGame(white, black);
         }
         else if (btnAI.contains(mx, my)) {
             System.out.println("Start game (human vs AI) for: " + playerName);
             var black = new AIPlayer(NodeValue.WHITE);
             black.setPlayerName("AI");
-
+            gui.removeComponent(this);
             UserInterface.startGame(white, black);
         }
     }
