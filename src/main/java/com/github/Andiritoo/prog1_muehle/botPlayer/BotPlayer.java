@@ -2,9 +2,10 @@ package com.github.Andiritoo.prog1_muehle.botPlayer;
 
 import com.github.Andiritoo.prog1_muehle.common.Move;
 import com.github.Andiritoo.prog1_muehle.game.GameState;
+import com.github.Andiritoo.prog1_muehle.player.BasePlayer;
 import com.github.Andiritoo.prog1_muehle.player.Player;
 
-public class BotPlayer implements Player {
+public class BotPlayer extends BasePlayer implements Player {
 
   // 3 sections: place, solve and survive
 
