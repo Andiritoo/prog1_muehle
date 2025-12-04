@@ -7,9 +7,16 @@ package com.github.Andiritoo.prog1_muehle.common;
  */
 public class Move {
 
-    public int from = -1;
-    public int to = -1;
-    public int remove = -1;
+    private int from = -1;
+    private int to = -1;
+    private int remove = -1;
+
+    public Move() {}
+
+    public Move(int from, int to) {
+        this.from = from;
+        this.to = to;
+    }
 
     public int getFrom() {
         return from;
