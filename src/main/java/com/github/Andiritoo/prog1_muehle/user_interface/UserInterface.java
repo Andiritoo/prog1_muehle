@@ -9,7 +9,7 @@ import com.github.Andiritoo.prog1_muehle.player.Player;
 
 public class UserInterface {
 
-    public static void main(String[] args) {
+    public static void start(String[] args) {
         Gui gui = Gui.create("Mühli", 1000, 1000);
 
         GameController controller = new GameController();
@@ -19,7 +19,8 @@ public class UserInterface {
 
         controller.startNewGame(whitePlayer, blackPlayer);
 
-        GameBoard board = new GameBoard(controller.getState().getBoard(), Math.min(gui.getHeight(), gui.getWidth()));
+        GameBoard board = new GameBoard(controller.getState().getBoard(),
+                Math.min(gui.getHeight(), gui.getWidth()));
         gui.addComponent(board);
 
         gui.setResizable(true);
