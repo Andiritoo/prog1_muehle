@@ -13,7 +13,6 @@ public class GameEngineImpl implements GameEngine {
     private final GameState state;
 
     private static final int[][] MILL_COMBINATIONS = {
-
             // outer ring
             {0, 1, 2}, {2, 3, 4}, {4, 5, 6}, {6, 7, 0},
 
@@ -61,8 +60,6 @@ public class GameEngineImpl implements GameEngine {
             {21,23},    // 22
             {22,16,15}  // 23
     };
-
-
 
     public GameEngineImpl(Player white, Player black) {
         state = new GameState();
@@ -193,21 +190,6 @@ public class GameEngineImpl implements GameEngine {
         return null;
     }
 
-    @Override
-    public GamePhase getGamePhaseForCurrentPlayer() {
-        return getPhaseForCurrentPlayer();
-    }
-
-    @Override
-    public boolean isAwaitingRemove() {
-        return state.isAwaitingRemove();
-    }
-
-    @Override
-    public boolean isAwaitingMove() {
-        return !state.isAwaitingRemove();
-    }
-
     private boolean isEmpty(int pos) {
         if (pos < 0 || pos >= 24) {
             return false;
@@ -334,7 +316,6 @@ public class GameEngineImpl implements GameEngine {
     }
 
     private GamePhase getPhaseForCurrentPlayer() {
-
         boolean white = state.isWhiteToMove();
         int stonesToPlace = white
                 ? state.getStonesToPlaceWhite()
