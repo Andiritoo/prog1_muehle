@@ -65,7 +65,11 @@ public class GameController {
         }
 
         Move move = currentPlayer.move(getState());
-        if (move != null && engine.isMoveValid(move)) {
+        if (move == null) {
+            return;
+        }
+
+        if (engine.isMoveValid(move)) {
             engine.applyMove(move);
         }
     }

@@ -96,6 +96,10 @@ public class GameEngineImpl implements GameEngine {
         int from = move.getFrom();
         int to = move.getTo();
 
+        if (from < -1 || from >= 24) return false;
+        if (to < -1 || to >= 24) return false;
+        if (from == -1 && to == -1) return false;
+
         if (getPhaseForCurrentPlayer() == GamePhase.PLACE && from == -1) {
             return isEmpty(to);
         }
@@ -205,12 +209,18 @@ public class GameEngineImpl implements GameEngine {
     }
 
     private boolean isEmpty(int pos) {
+        if (pos < 0 || pos >= 24) {
+            return false;
+        }
         int layer = pos / 8;
         int index = pos % 8;
         return state.getBoard()[layer][index] == EMPTY;
     }
 
     private boolean belongsToCurrent(int pos) {
+        if (pos < 0 || pos >= 24) {
+            return false;
+        }
         int layer = pos / 8;
         int index = pos % 8;
 
@@ -242,6 +252,9 @@ public class GameEngineImpl implements GameEngine {
     }
 
     private void removeStone(int pos) {
+        if (pos < 0 || pos >= 24) {
+            return;
+        }
         int layer = pos / 8;
         int idx = pos % 8;
         state.getBoard()[layer][idx] = EMPTY;

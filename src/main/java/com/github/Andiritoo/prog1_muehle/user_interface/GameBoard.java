@@ -7,6 +7,7 @@ import ch.trick17.gui.component.Rectangle;
 import ch.trick17.gui.component.Shape;
 import com.github.Andiritoo.prog1_muehle.common.NodeValue;
 import com.github.Andiritoo.prog1_muehle.game.GameController;
+import com.github.Andiritoo.prog1_muehle.game.GamePhase;
 
 import static com.github.Andiritoo.prog1_muehle.common.NodeValue.BLACK;
 import static com.github.Andiritoo.prog1_muehle.common.NodeValue.WHITE;
@@ -15,17 +16,20 @@ public class GameBoard implements Drawable, Clickable, UserInputProvider {
 
     private final GameController controller;
     private final Gui gui;
+    private final GameCompletionCallback completionCallback;
 
     // UserInputProvider state
     private Integer clickedPosition = null;
     private Integer selectedPosition = null;
+    private boolean gameEndedHandled = false;
 
     private static final double[] X = {0, 0.5, 1, 1, 1, 0.5, 0, 0};
     private static final double[] Y = {0, 0, 0, 0.5, 1, 1, 1, 0.5};
 
-    public GameBoard(GameController controller, Gui gui) {
+    public GameBoard(GameController controller, Gui gui, GameCompletionCallback completionCallback) {
         this.controller = controller;
         this.gui = gui;
+        this.completionCallback = completionCallback;
     }
 
     @Override
@@ -50,10 +54,14 @@ public class GameBoard implements Drawable, Clickable, UserInputProvider {
 
     @Override
     public void draw(Gui gui) {
-        //TODO: reopen Leaderboard and increment gamesWon for Winner --> pass back to leaderboard
-
         if (!controller.isGameOver()) {
             controller.executeCurrentPlayerMove();
+        } else if (!gameEndedHandled) {
+            gameEndedHandled = true;
+            if (completionCallback != null) {
+                completionCallback.onGameComplete(controller.getWinner());
+            }
+            return;
         }
 
         double size = Math.min(gui.getWidth(), gui.getHeight());
@@ -91,13 +99,11 @@ public class GameBoard implements Drawable, Clickable, UserInputProvider {
                     gui.fillCircle(cx, cy, pieceSize);
                     gui.setColor(0, 0, 0);
                     gui.drawCircle(cx, cy, pieceSize);
-
                 } else if (value == BLACK) {
                     gui.setColor(0, 0, 0);
                     gui.fillCircle(cx, cy, pieceSize);
                     gui.setColor(255, 255, 255);
                     gui.drawCircle(cx, cy, pieceSize * 0.6);
-
                 } else {
                     gui.setColor(0, 0, 0);
                     gui.fillCircle(cx, cy, nodeSize);
