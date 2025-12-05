@@ -1,36 +1,31 @@
 package com.github.Andiritoo.prog1_muehle.game;
 
-
 import com.github.Andiritoo.prog1_muehle.common.NodeValue;
 import com.github.Andiritoo.prog1_muehle.player.Player;
 
-import static com.github.Andiritoo.prog1_muehle.common.NodeValue.*;
+import static com.github.Andiritoo.prog1_muehle.common.NodeValue.EMPTY;
 
 public class GameState {
 
     private boolean gameInProgress;
 
-    private NodeValue[][] board = {
-            {EMPTY, WHITE, EMPTY, EMPTY, BLACK, EMPTY, EMPTY, EMPTY},
-            {EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY},
-            {EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY}
-    };
+    private NodeValue[][] board;
+
     private Player white;
     private Player black;
     private int stonesToPlaceWhite;
     private int stonesToPlaceBlack;
     private boolean whiteToMove;
 
-    /**
-     * @return Returns the Mill game board as a 3x8 two-dimensional array of nodes.
-     *         - board[layer][position]: layer 0-2 (outer to inner), position 0-7 (clockwise from top-left)
-     *         - Position 0: top-left, Position 2: top-right, Position 4: bottom-right, Position 6: bottom-left
-     *         - Odd positions (1,3,5,7) are the midpoints between corners
-     *         - Even positions (2,4,6,8) are the nodes where players can change layer.
-     *         - Returns the original board, don't modify with this Methode directly.
-     */
-    public NodeValue[][] getGameBoard(){
-        return board;
+    private boolean awaitingRemove;
+
+    private Player winner;
+
+    public GameState() {
+        board = new NodeValue[3][8];
+        for (int i = 0; i < 3; i++)
+            for (int j = 0; j < 8; j++)
+                board[i][j] = EMPTY;
     }
 
 
@@ -88,5 +83,21 @@ public class GameState {
 
     public void setStonesToPlaceBlack(int stonesToPlaceBlack) {
         this.stonesToPlaceBlack = stonesToPlaceBlack;
+    }
+
+    public boolean isAwaitingRemove() {
+        return awaitingRemove;
+    }
+
+    public void setAwaitingRemove(boolean awaitingRemove) {
+        this.awaitingRemove = awaitingRemove;
+    }
+
+    public Player getWinner() {
+        return winner;
+    }
+
+    public void setWinner(Player winner) {
+        this.winner = winner;
     }
 }

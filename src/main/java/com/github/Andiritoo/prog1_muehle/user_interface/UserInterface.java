@@ -1,9 +1,12 @@
 package com.github.Andiritoo.prog1_muehle.user_interface;
 
 import ch.trick17.gui.Gui;
+import com.github.Andiritoo.prog1_muehle.botPlayer.BotPlayer;
 import com.github.Andiritoo.prog1_muehle.game.GameController;
+import com.github.Andiritoo.prog1_muehle.humanPlayer.HumanPlayer;
 import com.github.Andiritoo.prog1_muehle.player.BasePlayer;
 import com.github.Andiritoo.prog1_muehle.player.Player;
+import com.github.Andiritoo.prog1_muehle.repository.PlayerRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +14,7 @@ import java.util.List;
 public class UserInterface {
 
     public static Gui gui;
+    private static GameBoard currentGameBoard;
 
     public static void startGui(String[] args) {
         int width = 1000;
@@ -19,28 +23,48 @@ public class UserInterface {
         gui = Gui.create("Mühli", width, height);
 
         // Leaderboard
-        openLeaderboard(null);
+        openLeaderboard();
 
-        gui.setResizable(true);
         gui.open();
-        gui.runUntilClosed(20);
+        gui.runUntilClosed();
     }
 
-    public static void openLeaderboard(List<BasePlayer> players) {
-        if(players == null || players.isEmpty()) {
-            players = new ArrayList<>();
-        }
-
-        Leaderboard leaderboard = new Leaderboard(players);
+    public static void openLeaderboard() {
+        Leaderboard leaderboard = new Leaderboard(new ArrayList<>(PlayerRepository.getPlayers()));
         gui.addComponent(leaderboard);
     }
 
     public static void startGame(Player whitePlayer, Player blackPlayer) {
-
         GameController controller = new GameController();
         controller.startNewGame(whitePlayer, blackPlayer);
 
-        GameBoard board = new GameBoard(controller.getState().getBoard(), Math.min(gui.getHeight(), gui.getWidth()));
-        gui.addComponent(board);
+        GameCompletionCallback callback = winner -> {
+            // Increment winner's games won if they are a human player
+            if (winner instanceof HumanPlayer) {
+                ((HumanPlayer) winner).incrementGameWon();
+            }
+
+            // Save player data
+            PlayerRepository.savePlayers();
+
+            // Remove game board and return to leaderboard
+            if (currentGameBoard != null) {
+                gui.removeComponent(currentGameBoard);
+                currentGameBoard = null;
+            }
+
+            openLeaderboard();
+        };
+
+        currentGameBoard = new GameBoard(controller, gui, callback);
+
+        if (whitePlayer instanceof HumanPlayer) {
+            ((HumanPlayer) whitePlayer).setInputProvider(currentGameBoard);
+        }
+        if (blackPlayer instanceof HumanPlayer) {
+            ((HumanPlayer) blackPlayer).setInputProvider(currentGameBoard);
+        }
+
+        gui.addComponent(currentGameBoard);
     }
 }

@@ -10,6 +10,7 @@ import com.github.Andiritoo.prog1_muehle.humanPlayer.HumanPlayer;
 import com.github.Andiritoo.prog1_muehle.llmPlayer.AIPlayer;
 import com.github.Andiritoo.prog1_muehle.player.BasePlayer;
 import com.github.Andiritoo.prog1_muehle.player.Player;
+import com.github.Andiritoo.prog1_muehle.repository.PlayerRepository;
 
 import java.util.Comparator;
 import java.util.List;
@@ -211,29 +212,27 @@ public class Leaderboard implements Drawable {
             nameFieldFocused = false;
         }
 
-        var white = new HumanPlayer();
-        white.setPlayerName(playerName);
+        HumanPlayer white = PlayerRepository.findOrCreatePlayer(playerName);
 
         // Buttons
         if (btnHuman.contains(mx, my)) {
             System.out.println("Start game (human vs human) for: " + playerName);
-            var black = new HumanPlayer();
-            black.setPlayerName("Player 2");
-
+            HumanPlayer black = PlayerRepository.findOrCreatePlayer("Player 2");
+            gui.removeComponent(this);
             UserInterface.startGame(white, black);
         }
         else if (btnBot.contains(mx, my)) {
             System.out.println("Start game (human vs bot) for: " + playerName);
             var black = new BotPlayer();
             black.setPlayerName("Bot");
-
+            gui.removeComponent(this);
             UserInterface.startGame(white, black);
         }
         else if (btnAI.contains(mx, my)) {
             System.out.println("Start game (human vs AI) for: " + playerName);
-            var black = new AIPlayer(NodeValue.WHITE);
+            var black = new AIPlayer(NodeValue.BLACK);
             black.setPlayerName("AI");
-
+            gui.removeComponent(this);
             UserInterface.startGame(white, black);
         }
     }
