@@ -80,6 +80,7 @@ public class GameBoard implements Drawable, Clickable, UserInputProvider {
             double x0 = border + (usable - side) / 2;
             double y0 = border + (usable - side) / 2;
 
+            gui.setColor(0, 0, 0);
             gui.setStrokeWidth(size * 0.003);
             gui.drawRect(x0, y0, side, side);
 
