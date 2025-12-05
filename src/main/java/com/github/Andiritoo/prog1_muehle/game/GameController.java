@@ -1,6 +1,5 @@
 package com.github.Andiritoo.prog1_muehle.game;
 
-
 import com.github.Andiritoo.prog1_muehle.common.Move;
 import com.github.Andiritoo.prog1_muehle.player.Player;
 
@@ -17,7 +16,7 @@ public class GameController {
         if (engine.isMoveValid(move)) {
             engine.applyMove(move);
         } else {
-            System.out.printf("invalid move");
+            System.out.println("Invalid move!");
         }
     }
 
@@ -29,12 +28,12 @@ public class GameController {
         return engine != null ? engine.getGamePhaseForCurrentPlayer() : null;
     }
 
-    public boolean isAwaitingMove() {
-        return engine != null && engine.isAwaitingMove();
-    }
-
     public boolean isAwaitingRemove() {
         return engine != null && engine.isAwaitingRemove();
+    }
+
+    public boolean isAwaitingMove() {
+        return engine != null && engine.isAwaitingMove();
     }
 
     public boolean isGameOver() {
@@ -43,5 +42,21 @@ public class GameController {
 
     public Player getWinner() {
         return engine != null ? engine.getWinner() : null;
+    }
+
+    // NEW METHOD: Check if it's white's turn
+    public boolean isWhiteToMove() {
+        return engine != null && engine.getState() != null && engine.getState().isWhiteToMove();
+    }
+
+    // NEW METHOD: Check if it's black's turn
+    public boolean isBlackToMove() {
+        return engine != null && engine.getState() != null && !engine.getState().isWhiteToMove();
+    }
+
+    // NEW METHOD: Get current player color as string
+    public String getCurrentPlayerColor() {
+        if (engine == null || engine.getState() == null) return "";
+        return engine.getState().isWhiteToMove() ? "White" : "Black";
     }
 }

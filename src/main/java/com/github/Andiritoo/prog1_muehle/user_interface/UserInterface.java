@@ -1,9 +1,7 @@
 package com.github.Andiritoo.prog1_muehle.user_interface;
 
 import ch.trick17.gui.Gui;
-import com.github.Andiritoo.prog1_muehle.botPlayer.BotPlayer;
 import com.github.Andiritoo.prog1_muehle.game.GameController;
-import com.github.Andiritoo.prog1_muehle.humanPlayer.HumanPlayer;
 import com.github.Andiritoo.prog1_muehle.player.BasePlayer;
 import com.github.Andiritoo.prog1_muehle.player.Player;
 
@@ -20,8 +18,7 @@ public class UserInterface {
 
         gui = Gui.create("Mühli", width, height);
 
-
-        // Leaderboard
+        // Start with leaderboard
         openLeaderboard(null);
 
         gui.open();
@@ -29,7 +26,7 @@ public class UserInterface {
     }
 
     public static void openLeaderboard(List<BasePlayer> players) {
-        if(players == null || players.isEmpty()) {
+        if (players == null || players.isEmpty()) {
             players = new ArrayList<>();
         }
 
@@ -37,14 +34,45 @@ public class UserInterface {
         gui.addComponent(leaderboard);
     }
 
-    public static void startGame(Player whitePlayer, Player blackPlayer) {
+    public static void startGame(Player whitePlayer, Player blackPlayer, List<BasePlayer> players) {
+        // Ensure we have a valid player list
+        if (players == null) {
+            players = new ArrayList<>();
+        }
+
+        // Add players to the list if they don't exist yet
+        addPlayerToListIfNew(players, (BasePlayer) whitePlayer);
+        addPlayerToListIfNew(players, (BasePlayer) blackPlayer);
 
         GameController controller = new GameController();
         controller.startNewGame(whitePlayer, blackPlayer);
+
         GameBoard board = new GameBoard(
                 controller,
-                gui
+                gui,
+                (BasePlayer) whitePlayer,
+                (BasePlayer) blackPlayer,
+                players
         );
+
         gui.addComponent(board);
+    }
+
+    private static void addPlayerToListIfNew(List<BasePlayer> players, BasePlayer player) {
+        // Check if player already exists in list by name
+        boolean exists = false;
+        for (BasePlayer p : players) {
+            if (p.getPlayerName().equals(player.getPlayerName())) {
+                exists = true;
+                // Update the reference with existing stats
+                player.setGamesWon(p.getGamesWon());
+                break;
+            }
+        }
+
+        // Add new player to list
+        if (!exists) {
+            players.add(player);
+        }
     }
 }
