@@ -38,13 +38,18 @@ public class UserInterface {
     }
 
     public static void startGame(Player whitePlayer, Player blackPlayer) {
-
         GameController controller = new GameController();
         controller.startNewGame(whitePlayer, blackPlayer);
-        GameBoard board = new GameBoard(
-                controller,
-                gui
-        );
+
+        GameBoard board = new GameBoard(controller, gui);
+
+        if (whitePlayer instanceof HumanPlayer) {
+            ((HumanPlayer) whitePlayer).setInputProvider(board);
+        }
+        if (blackPlayer instanceof HumanPlayer) {
+            ((HumanPlayer) blackPlayer).setInputProvider(board);
+        }
+
         gui.addComponent(board);
     }
 }

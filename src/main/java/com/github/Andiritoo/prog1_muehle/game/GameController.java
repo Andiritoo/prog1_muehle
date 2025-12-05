@@ -44,4 +44,29 @@ public class GameController {
     public Player getWinner() {
         return engine != null ? engine.getWinner() : null;
     }
+
+    public Player getCurrentPlayer() {
+        if (engine == null || engine.getState() == null) {
+            return null;
+        }
+        return engine.getState().isWhiteToMove()
+            ? engine.getState().getWhite()
+            : engine.getState().getBlack();
+    }
+
+    public void executeCurrentPlayerMove() {
+        if (engine == null || isGameOver()) {
+            return;
+        }
+
+        Player currentPlayer = getCurrentPlayer();
+        if (currentPlayer == null) {
+            return;
+        }
+
+        Move move = currentPlayer.move(getState());
+        if (move != null && engine.isMoveValid(move)) {
+            engine.applyMove(move);
+        }
+    }
 }
