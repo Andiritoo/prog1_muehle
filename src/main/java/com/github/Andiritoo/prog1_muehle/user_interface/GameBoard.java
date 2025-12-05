@@ -72,22 +72,31 @@ public class GameBoard implements Drawable, Clickable, UserInputProvider {
         double nodeSize = usable * 0.02;
         double pieceSize = usable * 0.04;
 
+        // Draw board structures
+        gui.setColor(0, 0, 0);
+        gui.setStrokeWidth(size * 0.003);
         for (int layer = 0; layer < 3; layer++) {
-
             double layerFraction = (2 - layer) / 2.0;
             double side = usable * (0.5 + layerFraction * 0.5);
 
             double x0 = border + (usable - side) / 2;
             double y0 = border + (usable - side) / 2;
 
-            gui.setColor(0, 0, 0);
-            gui.setStrokeWidth(size * 0.003);
             gui.drawRect(x0, y0, side, side);
 
             gui.drawLine(x0 + side * 0.5, y0, x0 + side * 0.5, y0 + side * 0.25);
             gui.drawLine(x0 + side, y0 + side * 0.5, x0 + side * 0.75, y0 + side * 0.5);
             gui.drawLine(x0 + side * 0.5, y0 + side, x0 + side * 0.5, y0 + side * 0.75);
             gui.drawLine(x0, y0 + side * 0.5, x0 + side * 0.25, y0 + side * 0.5);
+        }
+
+        // Draw pieces and nodes
+        for (int layer = 0; layer < 3; layer++) {
+            double layerFraction = (2 - layer) / 2.0;
+            double side = usable * (0.5 + layerFraction * 0.5);
+
+            double x0 = border + (usable - side) / 2;
+            double y0 = border + (usable - side) / 2;
 
             for (int j = 0; j < 8; j++) {
                 double cx = x0 + side * X[j];
