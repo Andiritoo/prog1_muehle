@@ -231,7 +231,7 @@ public class Leaderboard implements Drawable {
         }
         else if (btnAI.contains(mx, my)) {
             System.out.println("Start game (human vs AI) for: " + playerName);
-            var black = new AIPlayer(NodeValue.WHITE);
+            var black = new AIPlayer(NodeValue.BLACK);
             black.setPlayerName("AI");
             gui.removeComponent(this);
             UserInterface.startGame(white, black);
