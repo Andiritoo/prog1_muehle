@@ -304,7 +304,7 @@ public class Leaderboard implements Drawable {
         }
         else if (selectedMode.equals("BOT")) {
             System.out.println("Start game (human vs bot) for: " + white.getPlayerName());
-            var black = new BotPlayer();
+            var black = new BotPlayer(NodeValue.BLACK);
             black.setPlayerName("Bot");
             gui.removeComponent(this);
             UserInterface.startGame(white, black);
