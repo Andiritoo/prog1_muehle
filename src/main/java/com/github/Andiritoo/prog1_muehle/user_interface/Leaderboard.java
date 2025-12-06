@@ -20,9 +20,12 @@ public class Leaderboard implements Drawable {
     private final List<BasePlayer> players;
 
     // Name input
-    private Rect nameField;
-    private boolean nameFieldFocused = false;
-    private String playerName = "";
+    private Rect nameField1;
+    private Rect nameField2;
+    private boolean nameField1Focused = false;
+    private boolean nameField2Focused = false;
+    private String player1Name = "";
+    private String player2Name = "";
 
     // Buttons
     private Rect btnHuman;
@@ -105,17 +108,26 @@ public class Leaderboard implements Drawable {
         }
 
         // ======================================================
-        // NAME INPUT FIELD
+        // NAME INPUT FIELDS
         // ======================================================
 
-        double fieldW = screenW * 0.4;
-        double fieldH = screenH * 0.07;
-        double fieldX = screenW * 0.3;
+        double fieldW = screenW * 0.35;
+        double fieldH = screenH * 0.06;
+        double field1X = screenW * 0.08;
+        double field2X = screenW * 0.57;
         double fieldY = screenH * 0.52;
 
-        nameField = new Rect(fieldX, fieldY, fieldW, fieldH);
+        nameField1 = new Rect(field1X, fieldY, fieldW, fieldH);
+        nameField2 = new Rect(field2X, fieldY, fieldW, fieldH);
 
-        drawNameField(gui, nameField, playerName);
+        // Draw labels
+        gui.setColor(0, 0, 0);
+        gui.setFontSize((int)(fieldH * 0.5));
+        gui.drawString("Player 1 (White):", field1X, fieldY - fieldH * 0.2);
+        gui.drawString("Player 2 (Black):", field2X, fieldY - fieldH * 0.2);
+
+        drawNameField(gui, nameField1, player1Name, nameField1Focused);
+        drawNameField(gui, nameField2, player2Name, nameField2Focused);
 
 
         // ======================================================
@@ -149,13 +161,13 @@ public class Leaderboard implements Drawable {
     // ======================================================================
     // DRAW NAME FIELD
     // ======================================================================
-    private void drawNameField(Gui gui, Rect r, String text) {
+    private void drawNameField(Gui gui, Rect r, String text, boolean isFocused) {
 
         boolean hover = r.contains(gui.getMouseX(), gui.getMouseY());
 
-        if (nameFieldFocused) gui.setColor(255, 255, 255);
-        else if (hover)       gui.setColor(240, 240, 240);
-        else                 gui.setColor(220, 220, 220);
+        if (isFocused)   gui.setColor(255, 255, 255);
+        else if (hover)  gui.setColor(240, 240, 240);
+        else             gui.setColor(220, 220, 220);
 
         gui.fillRect(r.x, r.y, r.w, r.h);
 
@@ -204,32 +216,38 @@ public class Leaderboard implements Drawable {
         double mx = gui.getMouseX();
         double my = gui.getMouseY();
 
-        // Click inside name field → focus
-        if (nameField.contains(mx, my)) {
-            nameFieldFocused = true;
+        // Click inside name fields → focus
+        if (nameField1.contains(mx, my)) {
+            nameField1Focused = true;
+            nameField2Focused = false;
+            return;
+        } else if (nameField2.contains(mx, my)) {
+            nameField1Focused = false;
+            nameField2Focused = true;
             return;
         } else {
-            nameFieldFocused = false;
+            nameField1Focused = false;
+            nameField2Focused = false;
         }
 
-        HumanPlayer white = PlayerRepository.findOrCreatePlayer(playerName);
+        HumanPlayer white = PlayerRepository.findOrCreatePlayer(player1Name.isEmpty() ? "Player 1" : player1Name);
 
         // Buttons
         if (btnHuman.contains(mx, my)) {
-            System.out.println("Start game (human vs human) for: " + playerName);
-            HumanPlayer black = PlayerRepository.findOrCreatePlayer("Player 2");
+            HumanPlayer black = PlayerRepository.findOrCreatePlayer(player2Name.isEmpty() ? "Player 2" : player2Name);
+            System.out.println("Start game (human vs human): " + white.getPlayerName() + " vs " + black.getPlayerName());
             gui.removeComponent(this);
             UserInterface.startGame(white, black);
         }
         else if (btnBot.contains(mx, my)) {
-            System.out.println("Start game (human vs bot) for: " + playerName);
+            System.out.println("Start game (human vs bot) for: " + player1Name);
             var black = new BotPlayer();
             black.setPlayerName("Bot");
             gui.removeComponent(this);
             UserInterface.startGame(white, black);
         }
         else if (btnAI.contains(mx, my)) {
-            System.out.println("Start game (human vs AI) for: " + playerName);
+            System.out.println("Start game (human vs AI) for: " + player1Name);
             var black = new AIPlayer(NodeValue.BLACK);
             black.setPlayerName("AI");
             gui.removeComponent(this);
@@ -242,10 +260,13 @@ public class Leaderboard implements Drawable {
     // TYPING INTO THE TEXTFIELD
     // ======================================================================
     private void handleTyping(Gui gui) {
-        if (!nameFieldFocused) return;
+        if (!nameField1Focused && !nameField2Focused) return;
 
         List<String> keys = gui.getTypedKeys();
         if (keys == null || keys.isEmpty()) return;
+
+        // Determine which field to update
+        boolean isField1 = nameField1Focused;
 
         for (String key : keys) {
             if (key == null) continue;
@@ -254,27 +275,46 @@ public class Leaderboard implements Drawable {
 
             // Backspace variants (covers BACKSPACE, BACK_SPACE, \b, DELETE)
             if (upper.equals("BACKSPACE") || upper.equals("BACK_SPACE") || upper.equals("\b") || upper.equals("DELETE")) {
-                if (!playerName.isEmpty()) {
-                    playerName = playerName.substring(0, playerName.length() - 1);
+                if (isField1) {
+                    if (!player1Name.isEmpty()) {
+                        player1Name = player1Name.substring(0, player1Name.length() - 1);
+                    }
+                } else {
+                    if (!player2Name.isEmpty()) {
+                        player2Name = player2Name.substring(0, player2Name.length() - 1);
+                    }
                 }
                 continue;
             }
 
-            // Enter / Return: unfocus the field (optional)
+            // Enter / Return: unfocus the field or switch to next field
             if (upper.equals("ENTER") || upper.equals("RETURN")) {
-                nameFieldFocused = false;
+                if (isField1) {
+                    nameField1Focused = false;
+                    nameField2Focused = true;
+                } else {
+                    nameField2Focused = false;
+                }
                 continue;
             }
 
             // Space key
             if (upper.equals("SPACE")) {
-                if (playerName.length() < 20) playerName += ' ';
+                if (isField1) {
+                    if (player1Name.length() < 20) player1Name += ' ';
+                } else {
+                    if (player2Name.length() < 20) player2Name += ' ';
+                }
                 continue;
             }
 
             // Printable single-character keys — preserve original case
-            if (key.length() == 1 && playerName.length() < 20) {
-                playerName += key;
+            if (key.length() == 1) {
+                if (isField1 && player1Name.length() < 20) {
+                    player1Name += key;
+                } else if (!isField1 && player2Name.length() < 20) {
+                    player2Name += key;
+                }
             }
         }
     }
