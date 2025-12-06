@@ -7,6 +7,9 @@ public class GameController {
 
     private GameEngine engine;
 
+    /**
+     * Initializes the {@link GameEngine} and with that starts a new game.
+     */
     public void startNewGame(Player white, Player black) {
         this.engine = new GameEngineImpl(white, black);
     }
@@ -24,8 +27,8 @@ public class GameController {
         return engine != null ? engine.getState() : null;
     }
 
-    public GamePhase getGamePhase() {
-        return engine != null ? engine.getGamePhaseForCurrentPlayer() : null;
+    public boolean isGameOver() {
+        return engine != null && engine.isGameOver();
     }
 
     public boolean isAwaitingRemove() {
@@ -40,8 +43,19 @@ public class GameController {
         return engine != null && engine.isGameOver();
     }
 
-    public Player getWinner() {
-        return engine != null ? engine.getWinner() : null;
+        Player currentPlayer = getCurrentPlayer();
+        if (currentPlayer == null) {
+            return;
+        }
+
+        Move move = currentPlayer.move(getState());
+        if (move == null) {
+            return;
+        }
+
+        if (engine.isMoveValid(move)) {
+            engine.applyMove(move);
+        }
     }
 
     // NEW METHOD: Check if it's white's turn

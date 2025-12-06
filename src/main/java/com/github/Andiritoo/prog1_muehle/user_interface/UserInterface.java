@@ -4,6 +4,7 @@ import ch.trick17.gui.Gui;
 import com.github.Andiritoo.prog1_muehle.game.GameController;
 import com.github.Andiritoo.prog1_muehle.player.BasePlayer;
 import com.github.Andiritoo.prog1_muehle.player.Player;
+import com.github.Andiritoo.prog1_muehle.repository.PlayerRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.List;
 public class UserInterface {
 
     public static Gui gui;
+    private static GameBoard currentGameBoard;
 
     public static void startGui(String[] args) {
         int width = 1000;

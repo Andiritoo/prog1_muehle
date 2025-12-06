@@ -13,7 +13,6 @@ public class GameEngineImpl implements GameEngine {
     private final GameState state;
 
     private static final int[][] MILL_COMBINATIONS = {
-
             // outer ring
             {0, 1, 2}, {2, 3, 4}, {4, 5, 6}, {6, 7, 0},
 
@@ -62,8 +61,6 @@ public class GameEngineImpl implements GameEngine {
             {22,16,15}  // 23
     };
 
-
-
     public GameEngineImpl(Player white, Player black) {
         state = new GameState();
         state.setWhite(white);
@@ -95,6 +92,10 @@ public class GameEngineImpl implements GameEngine {
 
         int from = move.getFrom();
         int to = move.getTo();
+
+        if (from < -1 || from >= 24) return false;
+        if (to < -1 || to >= 24) return false;
+        if (from == -1 && to == -1) return false;
 
         if (getPhaseForCurrentPlayer() == GamePhase.PLACE && from == -1) {
             return isEmpty(to);
@@ -189,28 +190,19 @@ public class GameEngineImpl implements GameEngine {
         return null;
     }
 
-    @Override
-    public GamePhase getGamePhaseForCurrentPlayer() {
-        return getPhaseForCurrentPlayer();
-    }
-
-    @Override
-    public boolean isAwaitingRemove() {
-        return state.isAwaitingRemove();
-    }
-
-    @Override
-    public boolean isAwaitingMove() {
-        return !state.isAwaitingRemove();
-    }
-
     private boolean isEmpty(int pos) {
+        if (pos < 0 || pos >= 24) {
+            return false;
+        }
         int layer = pos / 8;
         int index = pos % 8;
         return state.getBoard()[layer][index] == EMPTY;
     }
 
     private boolean belongsToCurrent(int pos) {
+        if (pos < 0 || pos >= 24) {
+            return false;
+        }
         int layer = pos / 8;
         int index = pos % 8;
 
@@ -242,6 +234,9 @@ public class GameEngineImpl implements GameEngine {
     }
 
     private void removeStone(int pos) {
+        if (pos < 0 || pos >= 24) {
+            return;
+        }
         int layer = pos / 8;
         int idx = pos % 8;
         state.getBoard()[layer][idx] = EMPTY;
@@ -321,7 +316,6 @@ public class GameEngineImpl implements GameEngine {
     }
 
     private GamePhase getPhaseForCurrentPlayer() {
-
         boolean white = state.isWhiteToMove();
         int stonesToPlace = white
                 ? state.getStonesToPlaceWhite()

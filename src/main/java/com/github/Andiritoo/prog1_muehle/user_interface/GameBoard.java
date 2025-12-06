@@ -5,7 +5,6 @@ import ch.trick17.gui.component.Clickable;
 import ch.trick17.gui.component.Drawable;
 import ch.trick17.gui.component.Rectangle;
 import ch.trick17.gui.component.Shape;
-import com.github.Andiritoo.prog1_muehle.common.Move;
 import com.github.Andiritoo.prog1_muehle.common.NodeValue;
 import com.github.Andiritoo.prog1_muehle.game.GameController;
 import com.github.Andiritoo.prog1_muehle.game.GamePhase;
@@ -17,7 +16,7 @@ import java.util.List;
 import static com.github.Andiritoo.prog1_muehle.common.NodeValue.BLACK;
 import static com.github.Andiritoo.prog1_muehle.common.NodeValue.WHITE;
 
-public class GameBoard implements Drawable, Clickable {
+public class GameBoard implements Drawable, Clickable, UserInputProvider {
 
     private static final double BORDER_RATIO = 0.2;
     private static final double NODE_SIZE_RATIO = 0.02;

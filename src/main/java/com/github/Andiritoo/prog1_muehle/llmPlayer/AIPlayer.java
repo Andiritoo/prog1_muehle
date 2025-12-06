@@ -72,15 +72,25 @@ public class AIPlayer extends BasePlayer implements Player {
         prompt.append("- During movement phase: Move a stone to an adjacent empty position\n");
         prompt.append("- When you form a mill (3 in a row): Remove an opponent's stone\n\n");
 
+        if (gameState.isAwaitingRemove()) {
+            prompt.append("YOU FORMED A MILL! You must REMOVE one of your opponent's stones.\n\n");
+        }
+
         prompt.append("Available moves:\n");
         List<String> availableMoves = getAvailableMoves(gameState);
         for (String move : availableMoves) {
             prompt.append("- ").append(move).append("\n");
         }
 
-        prompt.append(
-                "\nRespond with ONLY the move in format: 'PLACE layer point' or 'MOVE from_layer from_point to_layer to_point' or 'REMOVE layer point'\n");
-        prompt.append("Example: 'PLACE 1 3' or 'MOVE 1 2 2 2' or 'REMOVE 2 5'\n");
+        prompt.append("\n=== IMPORTANT INSTRUCTIONS ===\n");
+        prompt.append("1. Choose EXACTLY ONE move from the list above\n");
+        prompt.append("2. Copy it EXACTLY as shown\n");
+        prompt.append("3. Do not add any explanation or extra text\n");
+        prompt.append("4. Valid formats:\n");
+        prompt.append("   - PLACE <layer> <point>  (example: PLACE 1 3)\n");
+        prompt.append("   - MOVE <from_layer> <from_point> <to_layer> <to_point>  (example: MOVE 1 2 2 2)\n");
+        prompt.append("   - REMOVE <layer> <point>  (example: REMOVE 2 5)\n");
+        prompt.append("\nYour move (choose from available moves above):\n");
 
         return prompt.toString();
     }
@@ -89,7 +99,18 @@ public class AIPlayer extends BasePlayer implements Player {
         List<String> moves = new ArrayList<>();
         NodeValue[][] board = gameState.getBoard();
 
-        // Check if we're in placement phase (counting our pieces)
+        if (gameState.isAwaitingRemove()) {
+            NodeValue opponent = (playerColor == NodeValue.WHITE) ? NodeValue.BLACK : NodeValue.WHITE;
+            for (int layer = 0; layer < 3; layer++) {
+                for (int position = 0; position < 8; position++) {
+                    if (board[layer][position] == opponent) {
+                        moves.add("REMOVE " + (layer + 1) + " " + (position + 1));
+                    }
+                }
+            }
+            return moves;
+        }
+
         int myPieces = 0;
         for (int layer = 0; layer < 3; layer++) {
             for (int position = 0; position < 8; position++) {
@@ -161,18 +182,35 @@ public class AIPlayer extends BasePlayer implements Player {
         try {
             if (cleanResponse.startsWith("PLACE")) {
                 String[] parts = cleanResponse.split("\\s+");
+                if (parts.length < 3) {
+                    return getFirstAvailableMove(gameState);
+                }
+
                 int layer = Integer.parseInt(parts[1]) - 1; // Convert to 0-based
                 int position = Integer.parseInt(parts[2]) - 1; // Convert to 0-based
+
+                if (layer < 0 || layer > 2 || position < 0 || position > 7) {
+                    return getFirstAvailableMove(gameState);
+                }
 
                 int targetIndex = boardIndex(layer, position);
                 return new Move(-1, targetIndex);
 
             } else if (cleanResponse.startsWith("MOVE")) {
                 String[] parts = cleanResponse.split("\\s+");
+                if (parts.length < 5) {
+                    return getFirstAvailableMove(gameState);
+                }
+
                 int fromLayer = Integer.parseInt(parts[1]) - 1; // Convert to 0-based
                 int fromPosition = Integer.parseInt(parts[2]) - 1; // Convert to 0-based
                 int toLayer = Integer.parseInt(parts[3]) - 1; // Convert to 0-based
                 int toPosition = Integer.parseInt(parts[4]) - 1; // Convert to 0-based
+
+                if (fromLayer < 0 || fromLayer > 2 || fromPosition < 0 || fromPosition > 7 ||
+                    toLayer < 0 || toLayer > 2 || toPosition < 0 || toPosition > 7) {
+                    return getFirstAvailableMove(gameState);
+                }
 
                 int fromIndex = boardIndex(fromLayer, fromPosition);
                 int toIndex = boardIndex(toLayer, toPosition);
@@ -180,18 +218,21 @@ public class AIPlayer extends BasePlayer implements Player {
 
             } else if (cleanResponse.startsWith("REMOVE")) {
                 String[] parts = cleanResponse.split("\\s+");
+                if (parts.length < 3) {
+                    return getFirstAvailableMove(gameState);
+                }
+
                 int layer = Integer.parseInt(parts[1]) - 1; // Convert to 0-based
                 int position = Integer.parseInt(parts[2]) - 1; // Convert to 0-based
 
+                if (layer < 0 || layer > 2 || position < 0 || position > 7) {
+                    return getFirstAvailableMove(gameState);
+                }
+
                 int targetIndex = boardIndex(layer, position);
-                Move move = new Move(-1, -1);
-                move.setFrom(targetIndex);
-                move.setTo(-1);
-                return move;
+                return new Move(targetIndex, -1);
             }
         } catch (Exception e) {
-            System.err.println("Failed to parse move: " + response);
-            // Fallback: return first available move
             return getFirstAvailableMove(gameState);
         }
 
@@ -201,12 +242,47 @@ public class AIPlayer extends BasePlayer implements Player {
     private Move getFirstAvailableMove(GameState gameState) {
         NodeValue[][] board = gameState.getBoard();
 
-        // Just find first empty spot for placement
-        for (int layer = 0; layer < 3; layer++) {
-            for (int position = 0; position < 8; position++) {
-                if (board[layer][position] == NodeValue.EMPTY) {
-                    int targetIndex = boardIndex(layer, position);
-                    return new Move(-1, targetIndex);
+        // Determine game phase
+        int stonesToPlace = (playerColor == NodeValue.WHITE)
+            ? gameState.getStonesToPlaceWhite()
+            : gameState.getStonesToPlaceBlack();
+
+        // Check if awaiting remove
+        if (gameState.isAwaitingRemove()) {
+            // Find first opponent stone
+            NodeValue opponent = (playerColor == NodeValue.WHITE) ? NodeValue.BLACK : NodeValue.WHITE;
+            for (int layer = 0; layer < 3; layer++) {
+                for (int position = 0; position < 8; position++) {
+                    if (board[layer][position] == opponent) {
+                        int targetIndex = boardIndex(layer, position);
+                        return new Move(targetIndex, -1);
+                    }
+                }
+            }
+        }
+
+        // If in placement phase
+        if (stonesToPlace > 0) {
+            for (int layer = 0; layer < 3; layer++) {
+                for (int position = 0; position < 8; position++) {
+                    if (board[layer][position] == NodeValue.EMPTY) {
+                        int targetIndex = boardIndex(layer, position);
+                        return new Move(-1, targetIndex);
+                    }
+                }
+            }
+        } else {
+            for (int layer = 0; layer < 3; layer++) {
+                for (int position = 0; position < 8; position++) {
+                    if (board[layer][position] == playerColor) {
+                        List<int[]> adjacentEmpty = getAdjacentEmpty(board, layer, position);
+                        if (!adjacentEmpty.isEmpty()) {
+                            int fromIndex = boardIndex(layer, position);
+                            int[] target = adjacentEmpty.get(0);
+                            int toIndex = boardIndex(target[0], target[1]);
+                            return new Move(fromIndex, toIndex);
+                        }
+                    }
                 }
             }
         }
