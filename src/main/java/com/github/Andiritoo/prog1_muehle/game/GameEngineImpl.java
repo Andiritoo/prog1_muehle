@@ -12,7 +12,7 @@ public class GameEngineImpl implements GameEngine {
 
     private final GameState state;
 
-    private static final int[][] MILL_COMBINATIONS = {
+    public static final int[][] MILL_COMBINATIONS = {
             // outer ring
             {0, 1, 2}, {2, 3, 4}, {4, 5, 6}, {6, 7, 0},
 
