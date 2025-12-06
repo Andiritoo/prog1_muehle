@@ -9,7 +9,8 @@ public class GameState {
 
     private boolean gameInProgress;
 
-    private NodeValue[][] board;
+    // Package-private to allow GameEngineImpl to modify directly
+    NodeValue[][] board;
 
     private Player white;
     private Player black;
@@ -38,11 +39,12 @@ public class GameState {
     }
 
     public NodeValue[][] getBoard() {
-        return board;
-    }
-
-    public void setBoard(NodeValue[][] board) {
-        this.board = board;
+        // Defensive copy
+        NodeValue[][] copy = new NodeValue[3][8];
+        for (int i = 0; i < 3; i++) {
+            System.arraycopy(board[i], 0, copy[i], 0, 8);
+        }
+        return copy;
     }
 
     public Player getWhite() {
