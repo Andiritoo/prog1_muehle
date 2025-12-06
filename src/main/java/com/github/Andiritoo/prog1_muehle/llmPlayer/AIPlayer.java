@@ -167,7 +167,7 @@ public class AIPlayer extends BasePlayer implements Player {
         // In 0-based indexing, that's positions 1, 3, 5, 7
         if (position % 2 == 1) {
             for (int otherLayer = 0; otherLayer < 3; otherLayer++) {
-                if (otherLayer != layer && board[otherLayer][position] == NodeValue.EMPTY) {
+                if (otherLayer != layer && board[otherLayer][position] == NodeValue.EMPTY && Math.abs(otherLayer - layer) == 1) {
                     adjacent.add(new int[] {otherLayer, position});
                 }
             }
