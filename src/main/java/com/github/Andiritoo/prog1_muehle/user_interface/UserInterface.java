@@ -1,7 +1,9 @@
 package com.github.Andiritoo.prog1_muehle.user_interface;
 
 import ch.trick17.gui.Gui;
+import com.github.Andiritoo.prog1_muehle.botPlayer.BotPlayer;
 import com.github.Andiritoo.prog1_muehle.game.GameController;
+import com.github.Andiritoo.prog1_muehle.humanPlayer.HumanPlayer;
 import com.github.Andiritoo.prog1_muehle.player.BasePlayer;
 import com.github.Andiritoo.prog1_muehle.player.Player;
 import com.github.Andiritoo.prog1_muehle.repository.PlayerRepository;
@@ -20,61 +22,49 @@ public class UserInterface {
 
         gui = Gui.create("Mühli", width, height);
 
-        // Start with leaderboard
-        openLeaderboard(null);
+        // Leaderboard
+        openLeaderboard();
 
         gui.open();
         gui.runUntilClosed();
     }
 
-    public static void openLeaderboard(List<BasePlayer> players) {
-        if (players == null || players.isEmpty()) {
-            players = new ArrayList<>();
-        }
-
-        Leaderboard leaderboard = new Leaderboard(players);
+    public static void openLeaderboard() {
+        Leaderboard leaderboard = new Leaderboard(new ArrayList<>(PlayerRepository.getPlayers()));
         gui.addComponent(leaderboard);
     }
 
-    public static void startGame(Player whitePlayer, Player blackPlayer, List<BasePlayer> players) {
-        // Ensure we have a valid player list
-        if (players == null) {
-            players = new ArrayList<>();
-        }
-
-        // Add players to the list if they don't exist yet
-        addPlayerToListIfNew(players, (BasePlayer) whitePlayer);
-        addPlayerToListIfNew(players, (BasePlayer) blackPlayer);
-
+    public static void startGame(Player whitePlayer, Player blackPlayer) {
         GameController controller = new GameController();
         controller.startNewGame(whitePlayer, blackPlayer);
 
-        GameBoard board = new GameBoard(
-                controller,
-                gui,
-                (BasePlayer) whitePlayer,
-                (BasePlayer) blackPlayer,
-                players
-        );
-
-        gui.addComponent(board);
-    }
-
-    private static void addPlayerToListIfNew(List<BasePlayer> players, BasePlayer player) {
-        // Check if player already exists in list by name
-        boolean exists = false;
-        for (BasePlayer p : players) {
-            if (p.getPlayerName().equals(player.getPlayerName())) {
-                exists = true;
-                // Update the reference with existing stats
-                player.setGamesWon(p.getGamesWon());
-                break;
+        GameCompletionCallback callback = winner -> {
+            // Increment winner's games won if they are a human player
+            if (winner instanceof HumanPlayer) {
+                ((HumanPlayer) winner).incrementGameWon();
             }
+
+            // Save player data
+            PlayerRepository.savePlayers();
+
+            // Remove game board and return to leaderboard
+            if (currentGameBoard != null) {
+                gui.removeComponent(currentGameBoard);
+                currentGameBoard = null;
+            }
+
+            openLeaderboard();
+        };
+
+        currentGameBoard = new GameBoard(controller, gui, callback);
+
+        if (whitePlayer instanceof HumanPlayer) {
+            ((HumanPlayer) whitePlayer).setInputProvider(currentGameBoard);
+        }
+        if (blackPlayer instanceof HumanPlayer) {
+            ((HumanPlayer) blackPlayer).setInputProvider(currentGameBoard);
         }
 
-        // Add new player to list
-        if (!exists) {
-            players.add(player);
-        }
+        gui.addComponent(currentGameBoard);
     }
 }
