@@ -108,6 +108,8 @@ public class GameBoard implements Drawable, Clickable, UserInputProvider {
         // Draw board structures
         gui.setColor(0, 0, 0);
         gui.setStrokeWidth(size * 0.003);
+
+        // Draw the three squares
         for (int layer = 0; layer < 3; layer++) {
             double layerFraction = (2 - layer) / 2.0;
             double side = usable * (0.5 + layerFraction * 0.5);
@@ -116,11 +118,55 @@ public class GameBoard implements Drawable, Clickable, UserInputProvider {
             double y0 = offsetY + border + (usable - side) / 2;
 
             gui.drawRect(x0, y0, side, side);
+        }
 
-            gui.drawLine(x0 + side * 0.5, y0, x0 + side * 0.5, y0 + side * 0.25);
-            gui.drawLine(x0 + side, y0 + side * 0.5, x0 + side * 0.75, y0 + side * 0.5);
-            gui.drawLine(x0 + side * 0.5, y0 + side, x0 + side * 0.5, y0 + side * 0.75);
-            gui.drawLine(x0, y0 + side * 0.5, x0 + side * 0.25, y0 + side * 0.5);
+        // Draw connecting lines between layers
+        // These lines connect the middle points of each side across all three layers
+        for (int sideIndex = 0; sideIndex < 4; sideIndex++) {
+            // Calculate start point (outermost layer, layer 0)
+            double layer0Fraction = (2 - 0) / 2.0;
+            double side0 = usable * (0.5 + layer0Fraction * 0.5);
+            double x0_layer0 = offsetX + border + (usable - side0) / 2;
+            double y0_layer0 = offsetY + border + (usable - side0) / 2;
+
+            // Calculate end point (innermost layer, layer 2)
+            double layer2Fraction = (2 - 2) / 2.0;
+            double side2 = usable * (0.5 + layer2Fraction * 0.5);
+            double x0_layer2 = offsetX + border + (usable - side2) / 2;
+            double y0_layer2 = offsetY + border + (usable - side2) / 2;
+
+            double startX, startY, endX, endY;
+
+            switch (sideIndex) {
+                case 0: // Top
+                    startX = x0_layer0 + side0 * 0.5;
+                    startY = y0_layer0;
+                    endX = x0_layer2 + side2 * 0.5;
+                    endY = y0_layer2;
+                    break;
+                case 1: // Right
+                    startX = x0_layer0 + side0;
+                    startY = y0_layer0 + side0 * 0.5;
+                    endX = x0_layer2 + side2;
+                    endY = y0_layer2 + side2 * 0.5;
+                    break;
+                case 2: // Bottom
+                    startX = x0_layer0 + side0 * 0.5;
+                    startY = y0_layer0 + side0;
+                    endX = x0_layer2 + side2 * 0.5;
+                    endY = y0_layer2 + side2;
+                    break;
+                case 3: // Left
+                    startX = x0_layer0;
+                    startY = y0_layer0 + side0 * 0.5;
+                    endX = x0_layer2;
+                    endY = y0_layer2 + side2 * 0.5;
+                    break;
+                default:
+                    continue;
+            }
+
+            gui.drawLine(startX, startY, endX, endY);
         }
 
         // Draw pieces and nodes

@@ -3,13 +3,11 @@ package com.github.Andiritoo.prog1_muehle.user_interface;
 import ch.trick17.gui.Gui;
 import ch.trick17.gui.component.Drawable;
 import com.github.Andiritoo.prog1_muehle.botPlayer.BotPlayer;
-import com.github.Andiritoo.prog1_muehle.common.Move;
 import com.github.Andiritoo.prog1_muehle.common.NodeValue;
 import com.github.Andiritoo.prog1_muehle.game.GameState;
 import com.github.Andiritoo.prog1_muehle.humanPlayer.HumanPlayer;
 import com.github.Andiritoo.prog1_muehle.llmPlayer.AIPlayer;
 import com.github.Andiritoo.prog1_muehle.player.BasePlayer;
-import com.github.Andiritoo.prog1_muehle.player.Player;
 import com.github.Andiritoo.prog1_muehle.repository.PlayerRepository;
 
 import java.util.Comparator;
@@ -18,6 +16,15 @@ import java.util.List;
 public class Leaderboard implements Drawable {
 
     private final List<BasePlayer> players;
+
+    // UI State
+    private enum UIState {
+        MODE_SELECTION,
+        NAME_INPUT
+    }
+
+    private UIState currentState = UIState.MODE_SELECTION;
+    private String selectedMode = ""; // "HUMAN", "BOT", or "AI"
 
     // Name input
     private Rect nameField1;
@@ -31,6 +38,7 @@ public class Leaderboard implements Drawable {
     private Rect btnHuman;
     private Rect btnBot;
     private Rect btnAI;
+    private Rect btnStartGame;
 
     // Simple rectangle helper type
     private static class Rect {
@@ -107,34 +115,25 @@ public class Leaderboard implements Drawable {
             index++;
         }
 
-        // ======================================================
-        // NAME INPUT FIELDS
-        // ======================================================
+        // Draw based on current state
+        if (currentState == UIState.MODE_SELECTION) {
+            drawModeSelection(gui, screenW, screenH);
+        } else {
+            drawNameInput(gui, screenW, screenH);
+        }
 
-        double fieldW = screenW * 0.35;
-        double fieldH = screenH * 0.06;
-        double field1X = screenW * 0.08;
-        double field2X = screenW * 0.57;
-        double fieldY = screenH * 0.52;
-
-        nameField1 = new Rect(field1X, fieldY, fieldW, fieldH);
-        nameField2 = new Rect(field2X, fieldY, fieldW, fieldH);
-
-        // Draw labels
-        gui.setColor(0, 0, 0);
-        gui.setFontSize((int)(fieldH * 0.5));
-        gui.drawString("Player 1 (White):", field1X, fieldY - fieldH * 0.2);
-        gui.drawString("Player 2 (Black):", field2X, fieldY - fieldH * 0.2);
-
-        drawNameField(gui, nameField1, player1Name, nameField1Focused);
-        drawNameField(gui, nameField2, player2Name, nameField2Focused);
+        handleClicks(gui);
+        if (currentState == UIState.NAME_INPUT) {
+            handleTyping(gui);
+        }
+    }
 
 
-        // ======================================================
-        // BIG BUTTONS
-        // ======================================================
-
-        double buttonAreaY = screenH * 0.62;
+    // ======================================================================
+    // DRAW MODE SELECTION (INITIAL SCREEN)
+    // ======================================================================
+    private void drawModeSelection(Gui gui, double screenW, double screenH) {
+        double buttonAreaY = screenH * 0.58;
 
         double buttonWidth = screenW * 0.25;
         double buttonHeight = screenH * 0.15;
@@ -152,9 +151,43 @@ public class Leaderboard implements Drawable {
         drawButton(gui, btnHuman, "Vs Human");
         drawButton(gui, btnBot,   "Vs Bot");
         drawButton(gui, btnAI,    "Vs AI");
+    }
 
-        handleClicks(gui);
-        handleTyping(gui);
+
+    // ======================================================================
+    // DRAW NAME INPUT (AFTER MODE SELECTION)
+    // ======================================================================
+    private void drawNameInput(Gui gui, double screenW, double screenH) {
+        double fieldW = screenW * 0.35;
+        double fieldH = screenH * 0.06;
+        double field1X = screenW * 0.08;
+        double field2X = screenW * 0.57;
+        double fieldY = screenH * 0.58;
+
+        nameField1 = new Rect(field1X, fieldY, fieldW, fieldH);
+
+        // Draw Player 1 label and field
+        gui.setColor(0, 0, 0);
+        gui.setFontSize((int)(fieldH * 0.5));
+        gui.drawString("Player 1 (White):", field1X, fieldY - fieldH * 0.2);
+        drawNameField(gui, nameField1, player1Name, nameField1Focused);
+
+        // Draw Player 2 field only for Human vs Human
+        if (selectedMode.equals("HUMAN")) {
+            nameField2 = new Rect(field2X, fieldY, fieldW, fieldH);
+            gui.setColor(0, 0, 0);
+            gui.drawString("Player 2 (Black):", field2X, fieldY - fieldH * 0.2);
+            drawNameField(gui, nameField2, player2Name, nameField2Focused);
+        }
+
+        // Draw Start Game button
+        double buttonWidth = screenW * 0.3;
+        double buttonHeight = screenH * 0.1;
+        double buttonX = (screenW - buttonWidth) / 2;
+        double buttonY = screenH * 0.72;
+
+        btnStartGame = new Rect(buttonX, buttonY, buttonWidth, buttonHeight);
+        drawButton(gui, btnStartGame, "Start Game");
     }
 
 
@@ -208,7 +241,7 @@ public class Leaderboard implements Drawable {
 
 
     // ======================================================================
-    // CLICK HANDLING (FIELD + BUTTONS)
+    // CLICK HANDLING
     // ======================================================================
     private void handleClicks(Gui gui) {
         if (!gui.isLeftMouseButtonPressed()) return;
@@ -216,38 +249,68 @@ public class Leaderboard implements Drawable {
         double mx = gui.getMouseX();
         double my = gui.getMouseY();
 
-        // Click inside name fields → focus
-        if (nameField1.contains(mx, my)) {
-            nameField1Focused = true;
-            nameField2Focused = false;
-            return;
-        } else if (nameField2.contains(mx, my)) {
-            nameField1Focused = false;
-            nameField2Focused = true;
-            return;
+        if (currentState == UIState.MODE_SELECTION) {
+            // Handle mode selection buttons
+            if (btnHuman.contains(mx, my)) {
+                selectedMode = "HUMAN";
+                currentState = UIState.NAME_INPUT;
+                System.out.println("Selected mode: Human vs Human");
+            }
+            else if (btnBot.contains(mx, my)) {
+                selectedMode = "BOT";
+                currentState = UIState.NAME_INPUT;
+                System.out.println("Selected mode: Human vs Bot");
+            }
+            else if (btnAI.contains(mx, my)) {
+                selectedMode = "AI";
+                currentState = UIState.NAME_INPUT;
+                System.out.println("Selected mode: Human vs AI");
+            }
         } else {
-            nameField1Focused = false;
-            nameField2Focused = false;
-        }
+            // Handle name input screen
 
+            // Click inside name fields → focus
+            if (nameField1.contains(mx, my)) {
+                nameField1Focused = true;
+                nameField2Focused = false;
+                return;
+            } else if (selectedMode.equals("HUMAN") && nameField2 != null && nameField2.contains(mx, my)) {
+                nameField1Focused = false;
+                nameField2Focused = true;
+                return;
+            } else if (btnStartGame.contains(mx, my)) {
+                // Start the game
+                startSelectedGame(gui);
+                return;
+            } else {
+                nameField1Focused = false;
+                nameField2Focused = false;
+            }
+        }
+    }
+
+
+    // ======================================================================
+    // START THE SELECTED GAME
+    // ======================================================================
+    private void startSelectedGame(Gui gui) {
         HumanPlayer white = PlayerRepository.findOrCreatePlayer(player1Name.isEmpty() ? "Player 1" : player1Name);
 
-        // Buttons
-        if (btnHuman.contains(mx, my)) {
+        if (selectedMode.equals("HUMAN")) {
             HumanPlayer black = PlayerRepository.findOrCreatePlayer(player2Name.isEmpty() ? "Player 2" : player2Name);
             System.out.println("Start game (human vs human): " + white.getPlayerName() + " vs " + black.getPlayerName());
             gui.removeComponent(this);
             UserInterface.startGame(white, black);
         }
-        else if (btnBot.contains(mx, my)) {
-            System.out.println("Start game (human vs bot) for: " + player1Name);
+        else if (selectedMode.equals("BOT")) {
+            System.out.println("Start game (human vs bot) for: " + white.getPlayerName());
             var black = new BotPlayer();
             black.setPlayerName("Bot");
             gui.removeComponent(this);
             UserInterface.startGame(white, black);
         }
-        else if (btnAI.contains(mx, my)) {
-            System.out.println("Start game (human vs AI) for: " + player1Name);
+        else if (selectedMode.equals("AI")) {
+            System.out.println("Start game (human vs AI) for: " + white.getPlayerName());
             var black = new AIPlayer(NodeValue.BLACK);
             black.setPlayerName("AI");
             gui.removeComponent(this);
@@ -289,10 +352,11 @@ public class Leaderboard implements Drawable {
 
             // Enter / Return: unfocus the field or switch to next field
             if (upper.equals("ENTER") || upper.equals("RETURN")) {
-                if (isField1) {
+                if (isField1 && selectedMode.equals("HUMAN")) {
                     nameField1Focused = false;
                     nameField2Focused = true;
                 } else {
+                    nameField1Focused = false;
                     nameField2Focused = false;
                 }
                 continue;
