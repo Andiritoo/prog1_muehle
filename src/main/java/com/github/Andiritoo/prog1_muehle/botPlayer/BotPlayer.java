@@ -62,7 +62,7 @@ public class BotPlayer extends BasePlayer implements Player {
   private Move moveNode(GameState gs) {
     ArrayList<Integer> myIndexes = getAllIndexes(gs.getBoard(), playerColor);
     ArrayList<Integer> freeIndexes = getAllIndexes(gs.getBoard(), NodeValue.EMPTY);
-    if (myIndexes.size() < 3) { // jumps allowed
+    if (myIndexes.size() <= 3) { // jumps allowed
       Random r = new Random();
       int pos = freeIndexes.get(r.nextInt(freeIndexes.size()));
       int my = myIndexes.get(r.nextInt(myIndexes.size()));
