@@ -34,4 +34,5 @@ public interface GameEngine {
      * @return the current game phase for the current player (PLACE, MOVE, or JUMP)
      */
     GamePhase getPhaseForCurrentPlayer();
+
 }
