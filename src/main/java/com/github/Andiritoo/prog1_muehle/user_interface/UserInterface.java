@@ -37,8 +37,16 @@ public class UserInterface {
 
         GameCompletionCallback callback = winner -> {
             // Increment winner's games won if they are a human player
-            if (winner instanceof HumanPlayer) {
-                ((HumanPlayer) winner).incrementGameWon();
+            if (winner != null) {
+                if (winner instanceof HumanPlayer) {
+                    HumanPlayer humanWinner = (HumanPlayer) winner;
+                    humanWinner.incrementGameWon();
+                    System.out.println("Game won by: " + humanWinner.getPlayerName() + " (wins: " + humanWinner.getGamesWon() + ")");
+                } else {
+                    System.out.println("Game won by non-human player");
+                }
+            } else {
+                System.out.println("Game ended with no winner");
             }
 
             // Save player data

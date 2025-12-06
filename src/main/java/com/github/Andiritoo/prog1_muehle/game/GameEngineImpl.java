@@ -171,14 +171,37 @@ public class GameEngineImpl implements GameEngine {
 
     @Override
     public boolean isGameOver() {
-        return (countPlayable(WHITE) < 3 && state.getStonesToPlaceWhite() == 0) || (countPlayable(BLACK) < 3 && state.getStonesToPlaceBlack() == 0);
+        boolean whiteHasLost = countPlayable(WHITE) < 3 && state.getStonesToPlaceWhite() == 0;
+        boolean blackHasLost = countPlayable(BLACK) < 3 && state.getStonesToPlaceBlack() == 0;
+
+        if (whiteHasLost || blackHasLost) {
+            state.setGameInProgress(false);
+            return true;
+        }
+        return false;
     }
 
     @Override
     public Player getWinner() {
-        if (!state.isGameInProgress()) {
-            return state.isWhiteToMove() ? state.getBlack() : state.getWhite();
+        if (!isGameOver()) {
+            return null;
         }
+
+        // Determine winner based on who lost
+        int whitePieces = countPlayable(WHITE);
+        int blackPieces = countPlayable(BLACK);
+
+        boolean whiteHasLost = whitePieces < 3 && state.getStonesToPlaceWhite() == 0;
+        boolean blackHasLost = blackPieces < 3 && state.getStonesToPlaceBlack() == 0;
+
+        if (whiteHasLost) {
+            state.setWinner(state.getBlack());
+            return state.getBlack();
+        } else if (blackHasLost) {
+            state.setWinner(state.getWhite());
+            return state.getWhite();
+        }
+
         return null;
     }
 
