@@ -29,4 +29,9 @@ public interface GameEngine {
      * @return the winner of the finished game or null if the game is in progress
      */
     Player getWinner();
+
+    /**
+     * @return the current game phase for the current player (PLACE, MOVE, or JUMP)
+     */
+    GamePhase getPhaseForCurrentPlayer();
 }

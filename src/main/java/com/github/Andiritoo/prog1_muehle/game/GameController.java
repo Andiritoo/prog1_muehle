@@ -7,6 +7,7 @@ import com.github.Andiritoo.prog1_muehle.player.Player;
 public class GameController {
 
     private GameEngine engine;
+    private String lastMoveError = null;
 
     /**
      * Initializes the {@link GameEngine} and with that starts a new game.
@@ -39,6 +40,18 @@ public class GameController {
             : engine.getState().getBlack();
     }
 
+    public boolean isWhiteToMove() {
+        return engine != null && engine.getState() != null && engine.getState().isWhiteToMove();
+    }
+
+    public boolean isAwaitingRemove() {
+        return engine != null && engine.getState() != null && engine.getState().isAwaitingRemove();
+    }
+
+    public GamePhase getGamePhase() {
+        return engine != null ? engine.getPhaseForCurrentPlayer() : null;
+    }
+
     /**
      * Requests a move from the current player if the game is not over yet.
      * The move returned by the player is then validated and only executed if it's a valid move.
@@ -60,6 +73,16 @@ public class GameController {
 
         if (engine.isMoveValid(move)) {
             engine.applyMove(move);
+            lastMoveError = null; // Clear error on successful move
+        } else {
+            // Set error message for invalid move
+            lastMoveError = "Invalid move!";
         }
+    }
+
+    public String getAndClearLastMoveError() {
+        String error = lastMoveError;
+        lastMoveError = null;
+        return error;
     }
 }

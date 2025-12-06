@@ -315,7 +315,8 @@ public class GameEngineImpl implements GameEngine {
                 + "/" + state.getStonesToPlaceBlack());
     }
 
-    private GamePhase getPhaseForCurrentPlayer() {
+    @Override
+    public GamePhase getPhaseForCurrentPlayer() {
         boolean white = state.isWhiteToMove();
         int stonesToPlace = white
                 ? state.getStonesToPlaceWhite()
