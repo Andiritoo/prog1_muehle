@@ -1,15 +1,12 @@
 package com.github.Andiritoo.prog1_muehle.user_interface;
 
 import ch.trick17.gui.Gui;
-import com.github.Andiritoo.prog1_muehle.botPlayer.BotPlayer;
 import com.github.Andiritoo.prog1_muehle.game.GameController;
 import com.github.Andiritoo.prog1_muehle.humanPlayer.HumanPlayer;
-import com.github.Andiritoo.prog1_muehle.player.BasePlayer;
 import com.github.Andiritoo.prog1_muehle.player.Player;
 import com.github.Andiritoo.prog1_muehle.repository.PlayerRepository;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class UserInterface {
 

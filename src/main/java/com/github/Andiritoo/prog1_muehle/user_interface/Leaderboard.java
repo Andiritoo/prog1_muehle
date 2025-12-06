@@ -3,13 +3,10 @@ package com.github.Andiritoo.prog1_muehle.user_interface;
 import ch.trick17.gui.Gui;
 import ch.trick17.gui.component.Drawable;
 import com.github.Andiritoo.prog1_muehle.botPlayer.BotPlayer;
-import com.github.Andiritoo.prog1_muehle.common.Move;
 import com.github.Andiritoo.prog1_muehle.common.NodeValue;
-import com.github.Andiritoo.prog1_muehle.game.GameState;
 import com.github.Andiritoo.prog1_muehle.humanPlayer.HumanPlayer;
 import com.github.Andiritoo.prog1_muehle.llmPlayer.AIPlayer;
 import com.github.Andiritoo.prog1_muehle.player.BasePlayer;
-import com.github.Andiritoo.prog1_muehle.player.Player;
 import com.github.Andiritoo.prog1_muehle.repository.PlayerRepository;
 
 import java.util.Comparator;
@@ -241,7 +238,7 @@ public class Leaderboard implements Drawable {
         }
         else if (btnBot.contains(mx, my)) {
             System.out.println("Start game (human vs bot) for: " + player1Name);
-            var black = new BotPlayer();
+            var black = new BotPlayer(NodeValue.BLACK);
             black.setPlayerName("Bot");
             gui.removeComponent(this);
             UserInterface.startGame(white, black);
