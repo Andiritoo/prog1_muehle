@@ -71,6 +71,9 @@ public class BotPlayer extends BasePlayer implements Player {
     if (myIndexes.size() <= 3) { 
       Integer[] myIndexesArr = myIndexes.toArray(new Integer[myIndexes.size()]);
       Integer[] freeIndexesArr = freeIndexes.toArray(new Integer[freeIndexes.size()]);
+
+      // TODO check if I have a mill
+
       Random rand = new Random();
 
       myBestPos = myIndexesArr[rand.nextInt(myIndexesArr.length)];
