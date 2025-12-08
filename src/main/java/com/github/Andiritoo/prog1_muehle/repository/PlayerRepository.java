@@ -4,6 +4,7 @@ import com.github.Andiritoo.prog1_muehle.humanPlayer.HumanPlayer;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class PlayerRepository {
@@ -15,7 +16,7 @@ public class PlayerRepository {
         if (players == null) {
             players = loadPlayers();
         }
-        return players;
+        return Collections.unmodifiableList(players);
     }
 
     public static void savePlayers() {
@@ -34,9 +35,11 @@ public class PlayerRepository {
     }
 
     public static HumanPlayer findOrCreatePlayer(String name) {
-        List<HumanPlayer> playerList = getPlayers();
+        if (players == null) {
+            players = loadPlayers();
+        }
 
-        for (HumanPlayer player : playerList) {
+        for (HumanPlayer player : players) {
             if (player.getPlayerName().equals(name)) {
                 return player;
             }
@@ -45,7 +48,7 @@ public class PlayerRepository {
         HumanPlayer newPlayer = new HumanPlayer();
         newPlayer.setPlayerName(name);
         newPlayer.setGamesWon(0);
-        playerList.add(newPlayer);
+        players.add(newPlayer);
         return newPlayer;
     }
 

@@ -10,6 +10,7 @@ import com.github.Andiritoo.prog1_muehle.llmPlayer.AIPlayer;
 import com.github.Andiritoo.prog1_muehle.player.BasePlayer;
 import com.github.Andiritoo.prog1_muehle.repository.PlayerRepository;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -53,8 +54,9 @@ public class Leaderboard implements Drawable {
     }
 
     public Leaderboard(List<BasePlayer> players) {
-        players.sort(Comparator.comparingInt(BasePlayer::getGamesWon).reversed());
-        this.players = players;
+        // Make defensive copy to avoid modifying caller's list
+        this.players = new ArrayList<>(players);
+        this.players.sort(Comparator.comparingInt(BasePlayer::getGamesWon).reversed());
     }
 
 

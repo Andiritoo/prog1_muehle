@@ -71,13 +71,6 @@ public class GameEngineImpl implements GameEngine {
         state.setStonesToPlaceBlack(9);
 
         state.setGameInProgress(true);
-
-        NodeValue[][] board = new NodeValue[3][8];
-        for (int i = 0; i < 3; i++)
-            Arrays.fill(board[i], EMPTY);
-
-        state.setBoard(board);
-
         state.setAwaitingRemove(false);
     }
 
@@ -156,7 +149,6 @@ public class GameEngineImpl implements GameEngine {
             }
 
             finalizeTurn();
-            checkPhaseTransition();
             debugState("After PLACE");
             return state;
         }
@@ -179,14 +171,37 @@ public class GameEngineImpl implements GameEngine {
 
     @Override
     public boolean isGameOver() {
-        return (countPlayable(WHITE) < 3 && state.getStonesToPlaceWhite() == 0) || (countPlayable(BLACK) < 3 && state.getStonesToPlaceBlack() == 0);
+        boolean whiteHasLost = countPlayable(WHITE) < 3 && state.getStonesToPlaceWhite() == 0;
+        boolean blackHasLost = countPlayable(BLACK) < 3 && state.getStonesToPlaceBlack() == 0;
+
+        if (whiteHasLost || blackHasLost) {
+            state.setGameInProgress(false);
+            return true;
+        }
+        return false;
     }
 
     @Override
     public Player getWinner() {
-        if (!state.isGameInProgress()) {
-            return state.isWhiteToMove() ? state.getBlack() : state.getWhite();
+        if (!isGameOver()) {
+            return null;
         }
+
+        // Determine winner based on who lost
+        int whitePieces = countPlayable(WHITE);
+        int blackPieces = countPlayable(BLACK);
+
+        boolean whiteHasLost = whitePieces < 3 && state.getStonesToPlaceWhite() == 0;
+        boolean blackHasLost = blackPieces < 3 && state.getStonesToPlaceBlack() == 0;
+
+        if (whiteHasLost) {
+            state.setWinner(state.getBlack());
+            return state.getBlack();
+        } else if (blackHasLost) {
+            state.setWinner(state.getWhite());
+            return state.getWhite();
+        }
+
         return null;
     }
 
@@ -196,7 +211,7 @@ public class GameEngineImpl implements GameEngine {
         }
         int layer = pos / 8;
         int index = pos % 8;
-        return state.getBoard()[layer][index] == EMPTY;
+        return state.board[layer][index] == EMPTY;
     }
 
     private boolean belongsToCurrent(int pos) {
@@ -207,13 +222,13 @@ public class GameEngineImpl implements GameEngine {
         int index = pos % 8;
 
         NodeValue current = state.isWhiteToMove() ? WHITE : BLACK;
-        return state.getBoard()[layer][index] == current;
+        return state.board[layer][index] == current;
     }
 
     private void placeStone(int to) {
         int layer = to / 8;
         int idx = to % 8;
-        state.getBoard()[layer][idx] = state.isWhiteToMove() ? WHITE : BLACK;
+        state.board[layer][idx] = state.isWhiteToMove() ? WHITE : BLACK;
 
         if (state.isWhiteToMove()) {
             state.setStonesToPlaceWhite(state.getStonesToPlaceWhite() - 1);
@@ -226,11 +241,10 @@ public class GameEngineImpl implements GameEngine {
         int fl = from / 8, fi = from % 8;
         int tl = to / 8, ti = to % 8;
 
-        NodeValue[][] b = state.getBoard();
-        NodeValue val = b[fl][fi];
+        NodeValue val = state.board[fl][fi];
 
-        b[fl][fi] = EMPTY;
-        b[tl][ti] = val;
+        state.board[fl][fi] = EMPTY;
+        state.board[tl][ti] = val;
     }
 
     private void removeStone(int pos) {
@@ -239,7 +253,7 @@ public class GameEngineImpl implements GameEngine {
         }
         int layer = pos / 8;
         int idx = pos % 8;
-        state.getBoard()[layer][idx] = EMPTY;
+        state.board[layer][idx] = EMPTY;
         state.setAwaitingRemove(false);
     }
 
@@ -247,23 +261,9 @@ public class GameEngineImpl implements GameEngine {
         state.setWhiteToMove(!state.isWhiteToMove());
     }
 
-    private void checkPhaseTransition() {
-        if (state.getStonesToPlaceWhite() == 0 &&
-                state.getStonesToPlaceBlack() == 0) {
-
-        }
-
-        if (countPlayable(current()) == 3) {
-        }
-    }
-
-    private NodeValue current() {
-        return state.isWhiteToMove() ? WHITE : BLACK;
-    }
-
     private int countPlayable(NodeValue v) {
         int c = 0;
-        for (NodeValue[] layer : state.getBoard()) {
+        for (NodeValue[] layer : state.board) {
             for (NodeValue n : layer) {
                 if (n == v) c++;
             }
@@ -272,7 +272,7 @@ public class GameEngineImpl implements GameEngine {
     }
 
     private boolean createsMill(int globalPos) {
-        NodeValue[][] b = state.getBoard();
+        NodeValue[][] b = state.board;
         NodeValue player = state.isWhiteToMove() ? WHITE : BLACK;
 
         for (int[] mill : MILL_COMBINATIONS) {
